@@ -1,7 +1,5 @@
-import React from 'react'
-
 export default function Footer() {
   return (
-    <div>Footer</div>
+    <div className="] w-full bg-[#EEEFFB] h-60 mt-30">Footer</div>
   )
 }
