@@ -2,7 +2,7 @@
 import { Link } from "react-router"
 export default function Login() {
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 shadow-lg">
       <div className="w-full max-w-md bg-white p-10 shadow-sm">
         
         {/* Heading */}
