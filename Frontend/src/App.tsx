@@ -1,27 +1,46 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import SignUp from "./pages/Signup";
 import RootLayout from "./components/layout/RootLayout";
 
 function App() {
+  const [user, setUser] = useState(null);
+
   const router = createBrowserRouter([
     {
       path: "/",
-      Component: RootLayout,
+      element: <RootLayout user={user} setUser={setUser} />,
       children: [
-        { path: "/", Component: Home },
-        { path: "/Login", Component: Login },
-        { path: "/Signup", Component: Signup },
+        { index: true, element: <Home /> },
+
+        {
+          path: "login",
+          element: <Login setUser={setUser} />,
+        },
+
+        {
+          path: "signup",
+          element: <SignUp />,
+        },
       ],
     },
-    //  { path: "/Login", Component: Login },
-    //   { path: "/Pages", Component: Pages },
-    //      { path: "/Signup", Component: Signup },
   ]);
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
       <RouterProvider router={router} />
     </>
   );

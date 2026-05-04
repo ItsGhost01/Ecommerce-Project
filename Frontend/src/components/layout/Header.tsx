@@ -1,11 +1,21 @@
 import { Mail, Phone, User, ShoppingCart, Heart, Search, Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { useState } from "react";
+import type { RootState } from "../../redux/store";
+import { logout } from "../../redux/features/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+
+
+
 
 export default function Header() {
+
   const location = useLocation();
   console.log(location);
+
+  const reduxUser = useSelector((globalstore:RootState) => globalstore.user.value);
   const [menuOpen, setMenuOpen] = useState(false);
+    const dispatch = useDispatch()
 
   return (
     <>
@@ -22,10 +32,25 @@ export default function Header() {
               <span>(122345)67890</span>
             </div>
           </div>
+        
 
           <div className="flex gap-6 items-center">
             <div className="flex gap-1 items-center">
+              {reduxUser ? (
+                <>
+                <span>{reduxUser.firstName} {reduxUser.lastName}</span>
+                <span 
+                onClick={() => {
+                dispatch(logout())
+                }}
+              >
+              logout
+              </span>
+                </>
+              ) : (
+
               <Link to="/Login">Login</Link>
+              )}
               <User/>
             </div>
             <div className="flex gap-1 items-center">
