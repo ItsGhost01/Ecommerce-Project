@@ -1,21 +1,29 @@
-import { Mail, Phone, User, ShoppingCart, Heart, Search, Menu, X } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  User,
+  ShoppingCart,
+  Heart,
+  Search,
+  Menu,
+  X,
+} from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { useState } from "react";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/features/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 
-
-
-
 export default function Header() {
-
   const location = useLocation();
   console.log(location);
 
-  const reduxUser = useSelector((globalstore:RootState) => globalstore.user.value);
+  const reduxUser = useSelector(
+    (globalstore: RootState) => globalstore.user.value,
+  );
+  
   const [menuOpen, setMenuOpen] = useState(false);
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -24,47 +32,54 @@ export default function Header() {
         <div className="container mx-auto px-3 py-3 md:py-5 flex flex-col gap-4 items-center sm:flex-row sm:justify-between">
           <div className="flex gap-8">
             <div className="flex gap-2 items-center">
-              <Mail/>
+              <Mail />
               <span>Shrestha.sumit1371@gmail.com</span>
             </div>
             <div className="flex gap-2 items-center">
-              <Phone/>
+              <Phone />
               <span>(122345)67890</span>
             </div>
           </div>
-        
 
           <div className="flex gap-6 items-center">
             <div className="flex gap-1 items-center">
               {reduxUser ? (
                 <>
-                <span>{reduxUser.firstName} {reduxUser.lastName}</span>
-                <span 
-                onClick={() => {
-                dispatch(logout())
-                }}
-              >
-              logout
-              </span>
+                  <span>
+                    {reduxUser.firstName} {reduxUser.lastName}
+                  </span>
+                  <span
+                    onClick={() => {
+                      dispatch(logout());
+                    }}
+                  >
+                    logout
+                  </span>
                 </>
               ) : (
-
-              <Link to="/Login">Login</Link>
+                <Link to="/Login">Login</Link>
               )}
-              <User/>
+              <User />
             </div>
+
             <div className="flex gap-1 items-center">
               <span>Wishlist</span>
               <Heart />
             </div>
-            <ShoppingCart/>
+
+            {reduxUser && (
+              <ShoppingCart />
+            )}
+            
           </div>
         </div>
       </div>
 
       <nav className="container">
         <div className="py-3 md:py-5 flex items-center justify-between">
+          <Link to="/">
           <span className="font-josefin font-bold text-3xl">Hekto</span>
+          </Link>
 
           <div
             className={
@@ -77,12 +92,27 @@ export default function Header() {
               onClick={() => setMenuOpen(false)}
               className="lg:hidden cursor-pointer self-end"
             />
-            <Link className="hover:text-[#FB2E86]" to="/">Home</Link>
-            <Link className="hover:text-[#FB2E86]" to="/Pages">Pages</Link>
-            <Link className="hover:text-[#FB2E86]" to="">Products</Link>
-            <Link className="hover:text-[#FB2E86]" to="">Blog</Link>
-            <Link className="hover:text-[#FB2E86]" to="">Shop</Link>
-            <Link className="hover:text-[#FB2E86]" to="">Contact</Link>
+            <Link className="hover:text-[#FB2E86]" to="/">
+              Home
+            </Link>
+            {/* <Link className="hover:text-[#FB2E86]" to="/Pages">
+              Pages
+            </Link> */}
+            <Link className="hover:text-[#FB2E86]" to="/Products">
+              Products
+            </Link>
+            {reduxUser && (
+              <Link className="hover:text-[#FB2E86]" to="/Orders">
+                Orders
+              </Link>
+            )}
+
+            <Link className="hover:text-[#FB2E86]" to="/Shop">
+              Shop
+            </Link>
+            <Link className="hover:text-[#FB2E86]" to="/Contact">
+              Contact
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">

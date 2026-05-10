@@ -24,16 +24,17 @@ const dispatch = useDispatch();
         toast("login success!");
         console.log(res.data);
         // setUser(res.data.user);
+        localStorage.setItem("token", res.data.token);
         dispatch(login(res.data.user))
          navigate("/");
       })
       .catch((err) => {
-        if (err.response.status == 401) {
+        if (err.response?.status === 401) {
           toast.error("Invalid Credentails");
-        } else if (err.response.status == 400) {
+        } else if (err.response?.status === 400) {
           toast.error(err.response.data.msg);
         } else {
-          toast.error(err.response.data.msg);
+          toast.error("something went wrong");
         }
       });
   };

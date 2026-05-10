@@ -5,7 +5,7 @@ import {DataTypes} from 'sequelize'
   // const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres')
 
 const User = sequelize.define(
-  'users',
+  'Users',
   {
     firstName: {
       type: DataTypes.STRING,
@@ -24,6 +24,15 @@ const User = sequelize.define(
       type: DataTypes.STRING,
        allowNull: false,
     },
+    image: {
+      type: DataTypes.STRING,
+       allowNull: true,
+    },
+    isSeller: {
+      type: DataTypes.BOOLEAN,
+       allowNull: true,
+    },
+    
   },
   {
     timestamps:true, 

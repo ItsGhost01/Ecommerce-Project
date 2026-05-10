@@ -16,6 +16,7 @@ export default function Signup() {
         password: e.target.password.value,
       })
       .then((res) => {
+        console.log(res);
         toast.success("Account Created Succesfully!");
         navigate("/login");
       })
@@ -34,7 +35,10 @@ export default function Signup() {
 
       <div className="w-full max-w-md bg-white p-10">
 
-        <h1 className="text-3xl font-bold mb-6">Signup</h1>
+        <h1 className="text-3xl font-bold mb-2 flex justify-center underline  decoration-[#FB2E86] decoration-dotted">Signup</h1>
+         <p className="text-sm text-gray-400 mb-2 font-Lato flex justify-center">
+            Please login using account detail bellow.
+          </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -73,12 +77,16 @@ export default function Signup() {
           <button className="w-full bg-pink-500 text-white p-3">
             Sign Up
           </button>
+          
+         
 
         </form>
 
-        <p className="mt-4 text-sm">
-          Already have account? <Link to="/login">Login</Link>
+        <p className="mt-4 text-sm flex justify-center font-Lato text-gray-400 ">
+          Already have account? 
+        <Link to="/login" className="font-Lato text-[17px] text-[#FB2E86] decoration-[#FB2E86] hover:underline decoration-[#FB2E86]-">Login</Link>
         </p>
+    
 
       </div>
     </div>

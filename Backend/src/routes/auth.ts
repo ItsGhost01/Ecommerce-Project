@@ -1,21 +1,11 @@
-import express from 'express'
-import { login, signup } from '../controllers/auth';
+import express from "express";
+import { login, signup, getUser } from "../controllers/auth";
 
-const router = express.Router()
+const router = express.Router();
 
-
-router.post('/api/login', login)
-
-router.post('/api/signup', signup)
-
-
-
-// router.post('/api/login', (req, res) => {
-//   res.send("login");
-// })
-
-// router.post('/api/signup', (req, res) => {
-//   res.send("signup");
-// })
+// only endpoints here (NO /api)
+router.post("/login", login);
+router.post("/signup", signup);
+router.get("/me", getUser);
 
 export default router;
