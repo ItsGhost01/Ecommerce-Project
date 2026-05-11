@@ -1,26 +1,31 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { createProduct, getProducts } from "../controllers/product";
+import multer from "multer";
+import path from "path";
 
-const router = express.Router();
+const router = express.Router()
+import { createProduct, getProducts } from "../controllers/product";
+import checkAuthentication from "../middlewares/checkAuthentication ";
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    const extension = path.extname(file.originalname)
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + extension
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+})
+
+const upload = multer({ storage: storage })
+router.get("/products", getProducts);
 
 // CREATE PRODUCT
-router.post("/", (req, res, next) => {
-    let token = req.headers.authorization?.split(" ")[1];
+router.post("/products", checkAuthentication, upload.array("image", 12), createProduct);
 
-    if (!token) {
-        return res.status(401).send("unauthenticated");
-    }
-
-    try {
-        jwt.verify(token, "shhhhh");
-        next(); // go to controller
-    } catch (err) {
-        return res.status(401).send("Invalid token");
-    }
-}, createProduct);
-
-// GET PRODUCTS
-router.get("/", getProducts);
+// // GET PRODUCTS
+// router.get("/products", getProducts);
 
 export default router;

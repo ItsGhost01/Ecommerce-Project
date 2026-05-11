@@ -24,16 +24,16 @@ const Product = sequelize.define(
       defaultValue: 0,
        allowNull: false,
     },
-    image: {
-      type: DataTypes.STRING,
-       allowNull: true,
-    },
     UserId: {
       type: DataTypes.INTEGER,
        references: {
         model: User,
        },
        allowNull: false,
+    },
+     image: {
+      type: DataTypes.STRING,
+       allowNull: true,
     }
     
   },

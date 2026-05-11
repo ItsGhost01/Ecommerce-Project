@@ -6,23 +6,28 @@ import cors from "cors";
 const app = express();
 const port = 5000;
 
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 app.use(express.json());
 
-app.post("/test",(req,res) =>{
-  console.log(req.body)
+app.use((req, res, next) => {
+  console.log("inside app.use() first");
+  next();
+});
 
-})
+app.use((req, res, next) => {
+  console.log("inside app.use() second");
+  next();
+});
 
-// routes
+// ROUTES
 app.use("/api", authRoute);
 app.use("/api", productRoute);
 app.use("/api/auth", authRoute);
-app.use("/api/products", productRoute);
-
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

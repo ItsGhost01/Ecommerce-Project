@@ -32,7 +32,8 @@ useEffect(() => {
         },
       })
       .then((res) => {
-        dispatch(login(res.data));
+        console.log("mydata", res.data.userInfo)
+        dispatch(login(res.data.userInfo));
       })
       .catch((err) => {
         console.log(err);
