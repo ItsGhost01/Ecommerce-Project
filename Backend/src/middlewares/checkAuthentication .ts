@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../types/User.js";
 
 
+
+
 const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
     let token = req.headers.authorization?.split(" ")[1]
 
@@ -10,7 +12,8 @@ const checkAuthentication = (req: Request, res: Response, next: NextFunction) =>
 
         try {
             let decoded = jwt.verify(token, 'shhhhh') as User;
-            req.user = decoded;
+             //@ts-ignore
+            req.user = decoded.userInfo;
             console.log(decoded);
             next()
 

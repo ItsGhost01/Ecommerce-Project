@@ -6,6 +6,7 @@ export interface User {
     firstName: string;
     lastName: string;
     email: string;
+    isSeller: boolean;
 }
 
 export interface UserState {

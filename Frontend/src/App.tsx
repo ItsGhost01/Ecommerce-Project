@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
@@ -7,12 +7,17 @@ import Login from "./pages/Login";
 import RootLayout from "./components/layout/RootLayout";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Products from "./pages/Products";
+import Products from "./pages/products/Products";
 import Orders from "./pages/Orders";
 import axios from "axios";
 import { useDispatch} from "react-redux";
 import { login } from "./redux/features/userSlice";
-// import type { RootState } from "./redux/store";
+import PageNotFound from "./pages/PageNotFound";
+import Create from "./pages/products/Create";
+import Forbidden from "./pages/Forbidden";
+import About from "./pages/About";
+
+
 
 function App() {
 
@@ -44,32 +49,43 @@ useEffect(() => {
 
 
 
-  const [user, setUser] = useState(null);
+
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <RootLayout user={user} setUser={setUser} />,
+      Component: RootLayout,
       children: [
         { path: "/", Component: Home },
         { path: "/products", Component: Products},
         {
            path: "", Component: ProtectedRoute,
-          children: [
-
-             { path: "/orders", Component: Orders},
+          children: [ { path: "/orders", Component: Orders},
 
           ]
     
           },
 
+          {
+           path: "",  element: <ProtectedRoute isSeller={true}/>,
+          children: [
+             { path: "seller/product/add", Component: Create},
+          ]
+    
+          },
+           {path: "*",  Component: Forbidden },
+
         {
           path: "/login",
-          element: <Login setUser={setUser} />, 
+          element: <Login/>, 
         },
 
-        {path: "/signup",  Component: Signup, },
+        {path: "/signup",  Component: Signup },
+        {path: "/About",  Component: About },
+      
+      
       ],
+      
     },
   ]);
 

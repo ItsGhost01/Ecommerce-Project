@@ -5,7 +5,7 @@ import Product from "./Product.js"
 const ProductImage = sequelize.define(
     'ProductImage',
     {
-        // id: automatic, 
+        
         path: {
             type: DataTypes.STRING,
             allowNull: false
@@ -24,6 +24,8 @@ const ProductImage = sequelize.define(
         underscored: true,
     }
 );
+
+
 
 
 export default ProductImage

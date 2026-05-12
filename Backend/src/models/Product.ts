@@ -1,6 +1,7 @@
 import { sequelize } from '../connections/database';
 import {DataTypes} from 'sequelize'
 import User from './User';
+import ProductImage from './ProductImage';
 
 
 const Product = sequelize.define(
@@ -31,10 +32,10 @@ const Product = sequelize.define(
        },
        allowNull: false,
     },
-     image: {
-      type: DataTypes.STRING,
-       allowNull: true,
-    }
+    //  image: {
+    //   type: DataTypes.STRING,
+    //    allowNull: true,
+    // }
     
   },
   {
@@ -43,5 +44,6 @@ const Product = sequelize.define(
     underscored:true,
   },
 );
+
 
 export default Product;

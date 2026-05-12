@@ -1,15 +1,13 @@
-
-import axios from 'axios';
+import axios from "axios";
 import { toast } from "react-toastify";
-import { Link,  useNavigate } from "react-router"
-import { useDispatch } from 'react-redux';
-import { login } from '../redux/features/userSlice';
-
-
+import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/features/userSlice";
+import { Eye } from "lucide-react";
 
 export default function Login() {
-const navigate = useNavigate();
-const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,8 +23,8 @@ const dispatch = useDispatch();
         console.log(res.data);
         // setUser(res.data.user);
         localStorage.setItem("token", res.data.token);
-        dispatch(login(res.data.user))
-         navigate("/");
+        dispatch(login(res.data.user));
+        navigate("/");
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -42,11 +40,11 @@ const dispatch = useDispatch();
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 shadow-lg">
       <div className="w-full max-w-md bg-white p-10 shadow-sm">
-        
         {/* Heading */}
         <div className="text-center mb-8  font-Lat ">
-          <h1 className="text-4xl font-bold underline decoration-[#FB2E86] decoration-dotted">Login</h1>
-    
+          <h1 className="text-4xl font-bold underline decoration-[#FB2E86] decoration-dotted">
+            Login
+          </h1>
 
           <p className="text-sm text-gray-400 mt-2 font-Lato">
             Please login using account detail bellow.
@@ -54,24 +52,27 @@ const dispatch = useDispatch();
         </div>
 
         {/* Form */}
-        <form className="space-y-5"
-           onSubmit={handleSubmit}
-           >
-        
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <input
+            defaultValue={"Shrestha.sumit1111@gmail.com"}
             type="email"
-             name="email"
+            name="email"
             placeholder="Email Address"
             className="w-full border border-gray-300 px-4 py-3 outline-none text-sm focus:border-[#FB2E86] transition"
           />
 
           {/* Password */}
-          <input
-            type="password"
-             name="password"
-            placeholder="Password"
-            className="w-full border border-gray-300 px-4 py-3 outline-none text-sm focus:border-[#FB2E86] transition"
-          />
+          <div className="relative">
+            <input
+              defaultValue={"123456"}
+              type="password"
+              name="password"
+              placeholder="Password"
+              className="w-full border border-gray-300 px-4 py-3 pr-12 outline-none text-sm focus:border-[#FB2E86] transition"
+            />
+
+            <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 cursor-pointer" />
+          </div>
 
           {/* Forgot Password */}
           <div>
@@ -83,7 +84,6 @@ const dispatch = useDispatch();
             </button>
           </div>
 
-      
           <button
             type="submit"
             className="w-full bg-[#FB2E86] hover:bg-pink-600 text-white font-semibold py-3 transition font-Lato,sans-serif "
@@ -95,10 +95,10 @@ const dispatch = useDispatch();
         <p className="text-center text-sm text-gray-400 mt-8">
           Don't have an Account?
           <span className=" ml-1 font-Lato,sans-serif not-italic text-[17px] text-[#FB2E86] leading-normal cursor-pointer hover:underline decoration-[##FB2E86]">
-           <Link to={"/Signup"}> Create account</Link>
+            <Link to={"/Signup"}> Create account</Link>
           </span>
         </p>
       </div>
     </div>
-  )
+  );
 }

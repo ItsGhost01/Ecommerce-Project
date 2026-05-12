@@ -1,4 +1,5 @@
 import express from "express";
+import "./models/index.js"
 import authRoute from "./routes/auth";
 import productRoute from "./routes/product";
 import cors from "cors";

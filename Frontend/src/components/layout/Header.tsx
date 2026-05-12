@@ -48,7 +48,7 @@ export default function Header() {
                   <span>
                     {reduxUser.firstName} {reduxUser.lastName}
                   </span>
-                  <span
+                  <span className="hover:underline cursor-pointer"
                     onClick={() => {
                       dispatch(logout());
                     }}
@@ -113,6 +113,9 @@ export default function Header() {
             <Link className="hover:text-[#FB2E86]" to="/Contact">
               Contact
             </Link>
+             <Link className="hover:text-[#FB2E86]" to="/About">
+              About
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
@@ -122,7 +125,7 @@ export default function Header() {
                 placeholder="Search..."
                 className="border border-black px-2 py-1 text-sm"
               />
-              <button className="text-white bg-[#FB2E86] px-2 py-1">
+              <button className="text-white bg-[#FB2E86] px-2 py-1 cursor-pointer hover:bg-pink-600">
                 <Search />
               </button>
             </div>

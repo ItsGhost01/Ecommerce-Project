@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import type { RootState } from "../redux/store";
+import type { RootState } from "../../redux/store";
+import { Plus } from "lucide-react";
+import { Link } from "react-router";
 
 const products = [
   {
@@ -168,7 +170,7 @@ export default function Products() {
       {/* Page Header */}
       <div className="bg-white border-b border-gray-200 py-4">
         <h1
-          className="font-semibold tracking-wide text-gray-900"
+          className="font-semibold tracking-wide text-gray-900 font-lato"
           style={{ ...serifFont, fontSize: "1.4rem" }}
         >
           Ecommerce Accessories &amp; Fashion Item
@@ -178,15 +180,17 @@ export default function Products() {
         </p>
       </div>
       {reduxUser?.isSeller && (
-        <button className="border p-4 bg-secondary text-white">
-          CREATE Product
-        </button>
+        <Link to="/Create">
+          <button className="flex border p-3 bg-[#fc03ca] text-white rounded-xl gap-2 mt-2 cursor-pointer hover:bg-purple-600">
+            Product <Plus />
+          </button>
+        </Link>
       )}
 
       {/* Layout */}
       <div className=" flex gap-9 px-5 py-8">
         {/* Sidebar */}
-        <aside className="flex-shrink-0" style={{ width: 168 }}>
+        <aside className="shrink-0" style={{ width: 168 }}>
           {/* Categories */}
           <div className="mb-7">
             <SectionTitle>Categories</SectionTitle>
