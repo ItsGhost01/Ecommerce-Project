@@ -12,10 +12,11 @@ import Orders from "./pages/Orders";
 import axios from "axios";
 import { useDispatch} from "react-redux";
 import { login } from "./redux/features/userSlice";
-import PageNotFound from "./pages/PageNotFound";
 import Create from "./pages/products/Create";
 import Forbidden from "./pages/Forbidden";
 import About from "./pages/About";
+import AdminRootLayout from "./components/layout/admin/AdminRootLayout";
+import Dashboard from "./pages/admin/Dashboard";
 
 
 
@@ -52,6 +53,23 @@ useEffect(() => {
 
 
   const router = createBrowserRouter([
+
+       {
+      path: "admin",
+      element: <ProtectedRoute forAdmin={true} />,
+      children: [
+        {
+          path: "",
+          Component: AdminRootLayout,
+          children: [
+            // { path: "categories", Component: Categories },
+            { path: "dashboard", Component: Dashboard },
+          
+          ],
+          
+        },
+      ],
+    },
     {
       path: "/",
       Component: RootLayout,
@@ -67,7 +85,7 @@ useEffect(() => {
           },
 
           {
-           path: "",  element: <ProtectedRoute isSeller={true}/>,
+           path: "",  element: <ProtectedRoute forSeller={true}/>,
           children: [
              { path: "seller/product/add", Component: Create},
           ]

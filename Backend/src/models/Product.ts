@@ -1,41 +1,45 @@
 import { sequelize } from '../connections/database';
 import {DataTypes} from 'sequelize'
 import User from './User';
-import ProductImage from './ProductImage';
+import Category from './Category';
 
 
 const Product = sequelize.define(
   'Products',
   {
-    Title: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    Price: {
+     categoryId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Category
+            },
+            allowNull: true
+        },
+    price: {
       type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0,
        allowNull: false,
     },
-    Description: {
+    description: {
       type: DataTypes.STRING,
        allowNull: true,
     },
-    Stock: {
+    stock: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
        allowNull: false,
     },
-    UserId: {
+    userId: {
       type: DataTypes.INTEGER,
        references: {
         model: User,
        },
        allowNull: false,
     },
-    //  image: {
-    //   type: DataTypes.STRING,
-    //    allowNull: true,
-    // }
+ 
     
   },
   {

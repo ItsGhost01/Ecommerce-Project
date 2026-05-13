@@ -2,6 +2,8 @@ import express from "express";
 import "./models/index.js"
 import authRoute from "./routes/auth";
 import productRoute from "./routes/product";
+import categoryRoute from "./routes/category";
+
 import cors from "cors";
 
 const app = express();
@@ -29,6 +31,7 @@ app.use((req, res, next) => {
 app.use("/api", authRoute);
 app.use("/api", productRoute);
 app.use("/api/auth", authRoute);
+app.use("/api", categoryRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

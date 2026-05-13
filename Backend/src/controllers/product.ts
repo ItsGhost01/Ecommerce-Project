@@ -2,19 +2,21 @@ import { Request, Response } from "express";
 import Product from "../models/Product";
 import ProductImage from "../models/ProductImage";
 import User from "../models/User";
+import Category from "../models/Category";
 
 // CREATE PRODUCT
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { Title, Price, Description, Stock, image, UserId } = req.body;
+    const { title, categoryId, price, description, stock, image} = req.body;
 
     const product = await Product.create({
-      Title,
-      Price,
-      Description,
-      Stock,
+      title,
+      categoryId: categoryId || 5,
+      price,
+      description,
+      stock,
       image,
-      UserId: req.user?.id,
+      userId: req.user?.id
     });
 
     //@ts-ignore
