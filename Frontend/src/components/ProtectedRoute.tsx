@@ -10,6 +10,7 @@ export default function ProtectedRoute({
   const reduxUser = useSelector(
     (globalStore: RootState) => globalStore.user.value,
   );
+  
 
   if (reduxUser) {
     if (forSeller) {
