@@ -106,10 +106,6 @@ export default function Header() {
                 Orders
               </Link>
             )}
-
-            <Link className="hover:text-[#FB2E86]" to="/Shop">
-              Shop
-            </Link>
             <Link className="hover:text-[#FB2E86]" to="/Contact">
               Contact
             </Link>

@@ -11,7 +11,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
     const product = await Product.create({
       title,
-      categoryId: categoryId || 5,
+      categoryId: categoryId,
       price,
       description,
       stock,
@@ -35,10 +35,12 @@ export const createProduct = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
 
-    res.status(500).json({
-      success: false,
-      message: "Failed to create product",
-    });
+
+  return res.status(500).json({
+    success: false,
+    message: "Failed to create Product"
+  })
+
   }
 };
 

@@ -5,6 +5,7 @@ export interface User {
     email: string;
     image: string | null;
     isSeller: boolean;
+    isAdmin: boolean;
     createdAt?: string;
     updatedAt?: string;
 }

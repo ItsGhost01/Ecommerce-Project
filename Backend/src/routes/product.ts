@@ -1,5 +1,4 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
 
@@ -23,7 +22,7 @@ const upload = multer({ storage: storage })
 router.get("/products", getProducts);
 
 // CREATE PRODUCT
-router.post("/products", checkAuthentication, upload.array("image", 12), createProduct);
+router.post("/seller/product/add", checkAuthentication, upload.array("image", 12), createProduct);
 
 // // GET PRODUCTS
 // router.get("/products", getProducts);

@@ -18,6 +18,7 @@ import About from "./pages/About";
 import AdminRootLayout from "./components/layout/admin/AdminRootLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import type { RootState } from "@reduxjs/toolkit/query";
+import Contact from "./pages/Contact";
 
 function App() {
   const reduxUser = useSelector(
@@ -83,6 +84,8 @@ function App() {
       children: [
         { path: "/", Component: Home },
         { path: "/products", Component: Products },
+        { path: "/Contact", Component: Contact },
+         { path: "/About", Component: About },
         {
           path: "",
           Component: ProtectedRoute,
@@ -100,9 +103,7 @@ function App() {
           path: "/login",
           element: <Login />,
         },
-
-        { path: "/signup", Component: Signup },
-        { path: "/About", Component: About },
+         { path: "/signup", Component: Signup },
       ],
     },
   ]);

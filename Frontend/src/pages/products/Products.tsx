@@ -14,51 +14,7 @@ const products = [
     img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80",
     desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
   },
-  {
-    id: 2,
-    title: "Sodales sit",
-    oldPrice: "$106.00",
-    newPrice: "$115.00",
-    stars: "★★★★★",
-    img: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
-  },
-  {
-    id: 3,
-    title: "Nibh varius",
-    oldPrice: "$116.00",
-    newPrice: "$159.00",
-    stars: "★★★★★",
-    img: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&q=80",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
-  },
-  {
-    id: 4,
-    title: "Mauris quis",
-    oldPrice: "$96.00",
-    newPrice: "$105.00",
-    stars: "★★★★☆",
-    img: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&q=80",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
-  },
-  {
-    id: 5,
-    title: "Morbi sagittis",
-    oldPrice: "$136.00",
-    newPrice: "$125.00",
-    stars: "★★★★★",
-    img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
-  },
-  {
-    id: 6,
-    title: "Ultrices venenatis",
-    oldPrice: "$156.00",
-    newPrice: "$138.00",
-    stars: "★★★★☆",
-    img: "https://images.unsplash.com/photo-1619451334792-150fd785ee74?w=400&q=80",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
-  },
+  
 ];
 
 const categories = [
@@ -68,6 +24,8 @@ const categories = [
   "osCommerce",
   "Jotun",
 ];
+
+
 const subCategories = ["Accessories", "Jewellery", "Watches"];
 const priceRanges = [
   "$20.00 – $150.00",
@@ -180,7 +138,7 @@ export default function Products() {
         </p>
       </div>
       {reduxUser?.isSeller && (
-        <Link to="/Create">
+        <Link to="/seller/product/add">
           <button className="flex border p-3 bg-[#fc03ca] text-white rounded-xl gap-2 mt-2 cursor-pointer hover:bg-purple-600">
             Product <Plus />
           </button>
