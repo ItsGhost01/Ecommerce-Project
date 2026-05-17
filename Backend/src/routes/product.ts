@@ -5,6 +5,7 @@ import path from "path";
 const router = express.Router()
 import { createProduct, getProducts } from "../controllers/product";
 import checkAuthentication from "../middlewares/checkAuthentication ";
+import checkIsSeller from "../middlewares/checkIsSeller";
 
 
 const storage = multer.diskStorage({
@@ -22,7 +23,7 @@ const upload = multer({ storage: storage })
 router.get("/products", getProducts);
 
 // CREATE PRODUCT
-router.post("/seller/product/add", checkAuthentication, upload.array("image", 12), createProduct);
+router.post("/seller/product/add", checkAuthentication, checkIsSeller, upload.array("images", 12), createProduct);
 
 // // GET PRODUCTS
 // router.get("/products", getProducts);
