@@ -22,7 +22,7 @@ const Category = sequelize.define(
 );
 
 Category.hasMany(Category, {
-    foreignKey: "parent_id",
+    foreignKey: "parentId",
     as: "subCategories"
 })
 

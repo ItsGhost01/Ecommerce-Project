@@ -1,12 +1,32 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { Plus } from "lucide-react";
 import { Link } from "react-router";
 
+const products = [
+  {
+    id: 1,
+    title: "Dictum morbi",
+    oldPrice: "$106.00",
+    newPrice: "$111.00",
+    stars: "★★★★☆",
+    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna is est adipiscing in phasellus non in justo.",
+  },
+  
+];
+
+const categories = [
+  "Prestashop",
+  "Magento",
+  "Bigcommerce",
+  "osCommerce",
+  "Jotun",
+];
 
 
+const subCategories = ["Accessories", "Jewellery", "Watches"];
 const priceRanges = [
   "$20.00 – $150.00",
   "$150.00 – $350.00",
@@ -28,6 +48,24 @@ function SectionTitle({ children }) {
   );
 }
 
+function CheckboxItem({ label, defaultChecked = false, indent = false }) {
+  const [checked, setChecked] = useState(defaultChecked);
+  return (
+    <label
+      className={`flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer hover:text-gray-800 ${indent ? "pl-5" : ""}`}
+    >
+      <input
+        type="checkbox"
+        className="rounded"
+        checked={checked}
+        onChange={() => setChecked(!checked)}
+        style={{ accentColor: accentGold }}
+      />
+      {label}
+    </label>
+  );
+}
+
 function ProductCard({ product }) {
   return (
     <div className="flex bg-white border border-gray-100 rounded-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -41,7 +79,6 @@ function ProductCard({ product }) {
           alt={product.title}
         />
       </div>
-
       <div className="flex flex-col justify-center px-6 py-5 flex-1">
         <h3
           className="font-semibold tracking-wide text-gray-900 mb-1"
@@ -49,7 +86,6 @@ function ProductCard({ product }) {
         >
           {product.title}
         </h3>
-
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xs text-gray-400 line-through">
             {product.oldPrice}
@@ -64,10 +100,19 @@ function ProductCard({ product }) {
             {product.stars}
           </span>
         </div>
-
         <p className="text-xs text-gray-400 leading-relaxed mb-3 max-w-md">
           {product.desc}
         </p>
+        <div className="flex gap-2">
+          {["🛒", "♡", "⊕"].map((icon) => (
+            <button
+              key={icon}
+              className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-full text-gray-400 text-xs cursor-pointer bg-transparent hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors duration-200"
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -75,63 +120,13 @@ function ProductCard({ product }) {
 
 export default function Products() {
   const reduxUser = useSelector(
-    (globalStore: RootState) => globalStore.user.value
+    (globalStore: RootState) => globalStore.user.value,
   );
-
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedPrice, setSelectedPrice] = useState("");
-
-  const BASE_URL = "http://localhost:5000/";
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/products").then((res) => {
-      const formatted = res.data.data.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        oldPrice: `$${(parseFloat(p.price) + 20).toFixed(2)}`,
-        newPrice: `$${p.price}`,
-        price: parseFloat(p.price),
-        categoryId: p.categoryId,
-        desc: p.description,
-        stars: "★★★★☆",
-        img: p.images?.[0]
-          ? BASE_URL + p.images[0].path.replace(/\\/g, "/")
-          : "https://via.placeholder.com/400",
-      }));
-
-      setProducts(formatted);
-    });
-
-    axios.get("http://localhost:5000/api/category").then((res) => {
-      setCategories(res.data.data);
-    });
-  }, []);
-
-  // CATEGORY FILTER
-  const categoryFiltered = selectedCategory
-    ? products.filter((p) => p.categoryId === Number(selectedCategory))
-    : products;
-
-  // PRICE FILTER
-  const filteredProducts = categoryFiltered.filter((p) => {
-    if (!selectedPrice) return true;
-
-    if (selectedPrice === "$20.00 – $150.00") return p.price <= 150;
-    if (selectedPrice === "$150.00 – $350.00")
-      return p.price > 150 && p.price <= 350;
-    if (selectedPrice === "$350.00 – $504.00")
-      return p.price > 350 && p.price <= 504;
-    if (selectedPrice === "$400.00 +") return p.price > 400;
-
-    return true;
-  });
 
   return (
     <div className="min-h-screen container">
-      {/* Header */}
-      <div className="bg-grey-700 border-b border-gray-200 py-4 ">
+      {/* Page Header */}
+      <div className="bg-white border-b border-gray-200 py-4">
         <h1
           className="font-semibold tracking-wide text-gray-900 font-lato"
           style={{ ...serifFont, fontSize: "1.4rem" }}
@@ -139,10 +134,9 @@ export default function Products() {
           Ecommerce Accessories &amp; Fashion Item
         </h1>
         <p className="text-xs text-gray-400 mt-0.5">
-          About {filteredProducts.length} results
+          About 14,521 results (0.62 seconds)
         </p>
       </div>
-
       {reduxUser?.isSeller && (
         <Link to="/seller/product/add">
           <button className="flex border p-3 bg-[#fc03ca] text-white rounded-xl gap-2 mt-2 cursor-pointer hover:bg-purple-600">
@@ -151,55 +145,34 @@ export default function Products() {
         </Link>
       )}
 
-      <div className="flex gap-9 px-5 py-8">
+      {/* Layout */}
+      <div className=" flex gap-9 px-5 py-8">
         {/* Sidebar */}
         <aside className="shrink-0" style={{ width: 168 }}>
+          {/* Categories */}
           <div className="mb-7">
             <SectionTitle>Categories</SectionTitle>
-
             <div className="flex flex-col mt-1">
-              {/* ✅ ALL PRODUCTS FIX */}
-              <label className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={selectedCategory === ""}
-                  onChange={() => setSelectedCategory("")}
-                />
-                All Products
-              </label>
-
-              {categories.map((cat: any) => (
-                <label
-                  key={cat.id}
-                  className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    checked={selectedCategory === String(cat.id)}
-                    onChange={() => setSelectedCategory(String(cat.id))}
-                  />
-                  {cat.title}
-                </label>
+              {categories.map((cat) => (
+                <CheckboxItem key={cat} label={cat} />
+              ))}
+              <CheckboxItem label="Bags" />
+              {subCategories.map((cat) => (
+                <CheckboxItem key={cat} label={cat} indent />
               ))}
             </div>
           </div>
 
+          {/* Price Filter */}
           <div>
             <SectionTitle>Price Filter</SectionTitle>
-
             <div className="flex flex-col mt-1">
               {priceRanges.map((range) => (
-                <label
+                <CheckboxItem
                   key={range}
-                  className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    checked={selectedPrice === range}
-                    onChange={() => setSelectedPrice(range)}
-                  />
-                  {range}
-                </label>
+                  label={range}
+                  defaultChecked={range === "$350.00 – $504.00"}
+                />
               ))}
             </div>
           </div>
@@ -211,25 +184,33 @@ export default function Products() {
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400">Per Page:</span>
-              <select className="text-xs border border-gray-200 px-2 py-1 rounded-sm">
+              <select className="text-xs border border-gray-200 bg-white text-gray-800 px-2 py-1 rounded-sm outline-none cursor-pointer">
                 <option>12</option>
                 <option>24</option>
                 <option>48</option>
               </select>
-
               <span className="text-xs text-gray-400 ml-2">Sort By:</span>
-              <select className="text-xs border border-gray-200 px-2 py-1 rounded-sm">
+              <select className="text-xs border border-gray-200 bg-white text-gray-800 px-2 py-1 rounded-sm outline-none cursor-pointer">
                 <option>Best Match</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
                 <option>Newest</option>
               </select>
             </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-gray-400">View:</span>
+              <button className="text-xs border border-gray-800 bg-gray-800 text-white px-2.5 py-1 rounded-sm cursor-pointer">
+                &#9776;
+              </button>
+              <button className="text-xs border border-gray-200 bg-transparent text-gray-400 px-2.5 py-1 rounded-sm cursor-pointer hover:bg-gray-800 hover:text-white hover:border-gray-800">
+                &#9783;
+              </button>
+            </div>
           </div>
 
-          {/* Products */}
+          {/* Product List */}
           <div className="flex flex-col gap-4">
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

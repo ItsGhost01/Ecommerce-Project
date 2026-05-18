@@ -3,10 +3,16 @@ import { Upload } from "lucide-react";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import type { SubmitHandler} from "react-hook-form"
-import { DevTool} from "@hookform/devtools"
-import { useForm } from "react-hook-form"; 
+import type { ChangeEvent, SyntheticEvent } from "react";
+// import { useForm, SubmitHandler } from "react-hook-form"
 
+const initialForm = {
+  title: "",
+  price: "",
+  stock: "",
+  description: "",
+  categoryId: "",
+};
 
 type FormValues = {
   title: string;
@@ -19,65 +25,80 @@ type FormValues = {
 
 export default function Create() {
   const [categories, setCategories] = useState([]);
+  const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
-
-  const form = useForm<FormValues>();
-  const { register, control, handleSubmit, reset } = form;
-
 
   // console.log("CATEGORY ID:", form.categoryId);
 
+  // ✅ fixed infinite render
   useEffect(() => {
     axios.get("http://localhost:5000/api/Category").then((res) => {
       setCategories(res.data.data);
     });
   }, []);
-
   console.log(categories);
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-  console.log("form submitted", data);
-
-  if (!data.images || data.images.length === 0) {
-    toast.error("Please select images");
-    return;
+  function handleChange(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  setLoading(true);
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const formData = new FormData();
+    try {
+      const imageInput = e.currentTarget.elements.namedItem(
+        "images",
+      ) as HTMLInputElement;
 
-    formData.append("title", data.title.trim());
-    formData.append("price", data.price.toFixed(2));
-    formData.append("stock", String(data.stock || 0));
-    formData.append("description", data.description.trim());
-    formData.append("categoryId", String(data.categoryId));
+      const images = imageInput?.files;
 
-    for (let i = 0; i < data.images.length; i++) {
-      formData.append("images", data.images[i]);
-    }
-
-    await axios.post(
-      "http://localhost:5000/api/seller/product/add",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+      if (!images || images.length === 0) {
+        toast.error("Please select images");
+        setLoading(false);
+        return;
       }
-    );
 
-    reset();
-    toast.success("Product created successfully");
-  } catch (err: any) {
-    console.log(err.response?.data || err.message);
-    toast.error(err.response?.data?.message || "failed to create product");
-  } finally {
-    setLoading(false);
+      const formData = new FormData();
+      formData.append("title", form.title.trim());
+
+      formData.append(
+        "price",
+        String(parseFloat(form.price || "0").toFixed(2)),
+      );
+
+      formData.append("stock", form.stock !== "" ? form.stock : "0");
+
+      formData.append("description", form.description.trim());
+
+      formData.append("categoryId", form.categoryId);
+
+      for (let i = 0; i < images.length; i++) {
+        formData.append("images", images[i]);
+      }
+
+      await axios.post(
+        "http://localhost:5000/api/seller/product/add",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      toast.success("Product created successfully");
+      setForm(initialForm);
+    } catch (err: any) {
+      console.log(err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "failed to create product");
+    } finally {
+      setLoading(false);
+    }
   }
-};
-
 
   return (
     <>
@@ -90,7 +111,7 @@ export default function Create() {
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit}
         className="container flex items-center justify-center p-6 "
       >
         <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-gray-200 ">
@@ -111,9 +132,10 @@ export default function Create() {
 
                 <div className="relative">
                   <input
-
+                    name="title"
                     type="text"
-                    {...register("title")}
+                    onChange={handleChange}
+                    value={form.title}
                     placeholder="e.g. Wireless Headphones"
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                   />
@@ -126,8 +148,9 @@ export default function Create() {
                   Category
                 </label>
                 <select
-                    {...register("categoryId", {valueAsNumber: true})}
-  
+                  name="categoryId"
+                  value={form.categoryId}
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">Select Category</option>
@@ -153,10 +176,11 @@ export default function Create() {
                     </span>
 
                     <input
-                       {...register("price", {valueAsNumber: true})}
+                      name="price"
                       type="number"
                       placeholder="0.00"
-                    
+                      onChange={handleChange}
+                      value={form.price}
                       className="w-full border border-gray-300 rounded-xl pl-8 pr-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
@@ -168,9 +192,10 @@ export default function Create() {
                   </label>
 
                   <input
-                      {...register("stock", {valueAsNumber: true})}
+                    name="stock"
                     type="number"
-                    
+                    onChange={handleChange}
+                    value={form.stock}
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
@@ -178,10 +203,10 @@ export default function Create() {
 
               {/* Description */}
               <textarea
-
-                 {...register("description")}
+                name="description"
                 placeholder="Describe your product..."
-                
+                onChange={handleChange}
+                value={form.description}
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none resize-none focus:ring-2 focus:ring-purple-500"
               ></textarea>
 
@@ -193,7 +218,7 @@ export default function Create() {
 
                 <input
                   type="file"
-                    {...register("images")}
+                  name="images"
                   multiple
                   className="block w-full text-sm text-gray-500"
                 />
@@ -203,9 +228,7 @@ export default function Create() {
               <div className="flex justify-end gap-4 pt-4">
                 <button
                   type="button"
-                    onClick={() => {
-                reset();
-                    }}
+                  onClick={() => setForm(initialForm)}
                   className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
                 >
                   Clear
@@ -223,7 +246,6 @@ export default function Create() {
           </div>
         </div>
       </form>
-      <DevTool control={control}/> 
     </>
   );
 }

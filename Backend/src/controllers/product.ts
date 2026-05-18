@@ -3,6 +3,7 @@ import Product from "../models/Product";
 import ProductImage from "../models/ProductImage";
 import User from "../models/User";
 import Category from "../models/Category";
+import { Order } from "sequelize";
 
 // CREATE PRODUCT
 export const createProduct = async (req: Request, res: Response) => {
@@ -50,25 +51,71 @@ export const getProducts = async (req: Request, res: Response) => {
 
     console.log(req.query);
     let limit = 5;
-    let offset = 0;
+    let page = 1;
+    let sort = ["createdAt", "DESC"]
+
+    let offset = (page-1)*limit;
 
     if (req.query.limit) {
         limit = parseInt(req.query.limit as string)
     }
-    let products = await Product.findAll({
+
+    if (req.query.page) {
+        page = parseInt(req.query.page as string)
+    }
+     if (req.query.offset) {
+        offset = parseInt(req.query.offset as string)
+    }
+
+
+
+    if(req.query.sort) {
+      switch(req.query.sort){
+        case "oldest": {
+          sort = ["createdAt", "ASC"]
+          break;
+        }
+        case "PriceAsc": {
+          sort = ["price", "ASC"]
+          break;
+        }
+        case "priceDesc": {
+          sort = ["price", 'DESC']
+          break;
+        }
+        default:{
+          sort = ["createdAt", "DESC"]
+          break
+        }
+      }
+    }
+    let productData = await Product.findAndCountAll({
+      include: [{ 
+        model:Category,
+        as:"category",
+        attributes:["id", "title", "parentId"]
+      },
+
+      { 
+        model:ProductImage,
+        as:"images",
+         attributes:["id", "path"]
+    
+      },
+
+    ],
       limit: limit,
-      offset: offset,
-        include: [
-    {
-      model: ProductImage,
-      as: "images", // IMPORTANT (must match association alias)
-    },
-      ],
+      order: [sort] as Order
     });
 
-    res.status(200).json({
+    res.send({
       success: true,
-      data: products,
+      data: {
+        total: productData.count,
+        limit: limit,
+        page:1,
+        products: productData.rows
+      }
     });
   } catch (error) {
     console.log(error);
