@@ -3,12 +3,12 @@ import Product from "../models/Product";
 import ProductImage from "../models/ProductImage";
 import User from "../models/User";
 import Category from "../models/Category";
-import { Order } from "sequelize";
+import { Op, Order } from "sequelize";
 
 // CREATE PRODUCT
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { title, categoryId, price, description, stock, image} = req.body;
+    const { title, categoryId, price, description, stock, image } = req.body;
 
     const product = await Product.create({
       title,
@@ -17,16 +17,16 @@ export const createProduct = async (req: Request, res: Response) => {
       description,
       stock,
       image,
-      userId: req.user?.id
+      userId: req.user?.id,
     });
 
     //@ts-ignore
-    req.files?.forEach(el => {
+    req.files?.forEach((el) => {
       ProductImage.create({
-        path:el.path,
-        productId:product.getDataValue("id")
-      })
-    })
+        path: el.path,
+        productId: product.getDataValue("id"),
+      });
+    });
 
     res.status(201).json({
       success: true,
@@ -36,76 +36,97 @@ export const createProduct = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
 
-
-  return res.status(500).json({
-    success: false,
-    message: "Failed to create Product"
-  })
-
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create Product",
+    });
   }
 };
 
 // GET ALL PRODUCTS
 export const getProducts = async (req: Request, res: Response) => {
   try {
-
     console.log(req.query);
     let limit = 5;
     let page = 1;
-    let sort = ["createdAt", "DESC"]
+    let sort = ["createdAt", "DESC"];
+    let searchText = "";
 
-    let offset = (page-1)*limit;
+    let offset = (page - 1) * limit;
+
+    let categoryIds: string[] = [];
+    if (req.query.categoryIds) {
+      categoryIds = (req.query.categoryIds as string).split(",");
+    }
+
+    let whereCategoryCondition = {};
+
+    if (categoryIds.length > 0) {
+      whereCategoryCondition = {
+        id: {
+          [Op.in]: categoryIds,
+        },
+      };
+    }
+
+    if (req.query.searchText) {
+      searchText = req.query.searchText as string;
+    }
 
     if (req.query.limit) {
-        limit = parseInt(req.query.limit as string)
+      limit = parseInt(req.query.limit as string);
     }
 
     if (req.query.page) {
-        page = parseInt(req.query.page as string)
+      page = parseInt(req.query.page as string);
     }
-     if (req.query.offset) {
-        offset = parseInt(req.query.offset as string)
+    if (req.query.offset) {
+      offset = parseInt(req.query.offset as string);
     }
 
-
-
-    if(req.query.sort) {
-      switch(req.query.sort){
+    if (req.query.sort) {
+      switch (req.query.sort) {
         case "oldest": {
-          sort = ["createdAt", "ASC"]
+          sort = ["createdAt", "ASC"];
           break;
         }
         case "PriceAsc": {
-          sort = ["price", "ASC"]
+          sort = ["price", "ASC"];
           break;
         }
         case "priceDesc": {
-          sort = ["price", 'DESC']
+          sort = ["price", "DESC"];
           break;
         }
-        default:{
-          sort = ["createdAt", "DESC"]
-          break
+        default: {
+          sort = ["createdAt", "DESC"];
+          break;
         }
       }
     }
     let productData = await Product.findAndCountAll({
-      include: [{ 
-        model:Category,
-        as:"category",
-        attributes:["id", "title", "parentId"]
+      where: {
+        title: {
+          [Op.iLike]: searchText ? `%${searchText}%` : `%`,
+        },
       },
 
-      { 
-        model:ProductImage,
-        as:"images",
-         attributes:["id", "path"]
-    
-      },
+      include: [
+        {
+          model: Category,
+          as: "category",
+          attributes: ["id", "title", "parentId"],
+          where: whereCategoryCondition,
+        },
 
-    ],
+        {
+          model: ProductImage,
+          as: "images",
+          attributes: ["id", "path"],
+        },
+      ],
       limit: limit,
-      order: [sort] as Order
+      order: [sort] as Order,
     });
 
     res.send({
@@ -113,9 +134,9 @@ export const getProducts = async (req: Request, res: Response) => {
       data: {
         total: productData.count,
         limit: limit,
-        page:1,
-        products: productData.rows
-      }
+        page: 1,
+        products: productData.rows,
+      },
     });
   } catch (error) {
     console.log(error);
