@@ -4,11 +4,14 @@ import authRoute from "./routes/auth";
 import productRoute from "./routes/product";
 import categoryRoute from "./routes/category";
 
+
+
 import cors from "cors";
 
 const app = express();
 const port = 5000;
 
+app.use("/uploads",express.static('uploads')); // for images
 app.use(
   cors({
     origin: "http://localhost:5173",

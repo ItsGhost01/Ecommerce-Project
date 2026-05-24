@@ -155,7 +155,7 @@ export default function Products() {
 
       <div className="flex gap-10 px-5 py-8">
         {/* Sidebar */}
-        <aside className="w-[170px] shrink-0">
+        <aside className="w-42.25 shrink-0">
           {/* Categories */}
           <div className="mb-8">
             <SectionTitle>Categories</SectionTitle>
