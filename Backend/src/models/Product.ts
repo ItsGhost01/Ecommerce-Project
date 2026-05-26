@@ -51,3 +51,5 @@ const Product = sequelize.define(
 
 
 export default Product;
+
+// adding more details in product page and handling errors in backend
