@@ -8,11 +8,12 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { useState } from "react";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/features/userSlice";
 import { useSelector, useDispatch } from "react-redux";
+
 
 export default function Header() {
   const location = useLocation();
@@ -24,6 +25,22 @@ export default function Header() {
   
   const [menuOpen, setMenuOpen] = useState(false);
   const dispatch = useDispatch();
+
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  console.log("query: q:", searchParams.get("q"));
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    e.target.searchText;
+
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("q", e.target.searchText.value);
+      return newParams;
+    });
+  }
 
   return (
     <>
@@ -115,16 +132,17 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex">
+            <form onSubmit= {handleSubmit}className="flex">
               <input
                 type="text"
                 placeholder="Search..."
+                name="searchText"
                 className="border border-black px-2 py-1 text-sm"
               />
               <button className="text-white bg-[#FB2E86] px-2 py-1 cursor-pointer hover:bg-pink-600">
                 <Search />
               </button>
-            </div>
+            </form>
 
             <button className="lg:hidden" onClick={() => setMenuOpen(true)}>
               <Menu />

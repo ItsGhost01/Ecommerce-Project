@@ -47,7 +47,7 @@ export const createProduct = async (req: Request, res: Response) => {
 export const getProducts = async (req: Request, res: Response) => {
   try {
     console.log(req.query);
-    let limit = 5;
+    let limit = 10;
     let page = 1;
     let sort = ["createdAt", "DESC"];
     let searchText = "";
@@ -63,9 +63,18 @@ export const getProducts = async (req: Request, res: Response) => {
 
     if (categoryIds.length > 0) {
       whereCategoryCondition = {
-        id: {
-          [Op.in]: categoryIds,
+        [Op.or]: [
+          {
+            id: {
+          [Op.in]: categoryIds
+          }
         },
+        {
+            parentId: {
+          [Op.in]: categoryIds
+          }
+        },
+      ]
       };
     }
 

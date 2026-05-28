@@ -3,7 +3,15 @@ import { Request, Response } from "express";
 
 export const getCategory = async (req: Request, res: Response) => {
   try {
-    const category = await Category.findAll();
+    const category = await Category.findAll({
+      where: {
+        parentId: null
+      },
+      include: {
+        model: Category, 
+        as: "subCategories"
+      }
+    });
     res.status(200).json({
       success: true,
       data: category,

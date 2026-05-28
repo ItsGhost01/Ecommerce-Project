@@ -3,12 +3,8 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Link } from "react-router";
 
-const priceRanges = [
-  "$20.00 – $150.00",
-  "$150.00 – $350.00",
-  "$350.00 – $504.00",
-  "$400.00 +",
-];
+
+
 
 const accentGold = "#C8A96E";
 
@@ -31,6 +27,23 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description?: string;
+  images?: {
+    path: string;
+  }[];
+}
+
+interface Category {
+  id: number;
+  title: string;
+  parentId?: number;
+ subCategories?: Category[];
+}
+
 interface ProductCardProps {
   product: {
     id: number;
@@ -46,7 +59,6 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="flex bg-white border border-gray-100 rounded-sm overflow-hidden hover:shadow-lg transition duration-300">
-      {/* Image */}
       <div
         className="shrink-0 overflow-hidden bg-gray-50"
         style={{ width: 190, height: 170 }}
@@ -58,7 +70,6 @@ function ProductCard({ product }: ProductCardProps) {
         />
       </div>
 
-      {/* Content */}
       <div className="flex flex-col justify-center px-6 py-5 flex-1">
         <h2
           className="font-semibold text-gray-900 mb-2"
@@ -98,34 +109,67 @@ function ProductCard({ product }: ProductCardProps) {
 }
 
 export default function Products() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedPrice, setSelectedPrice] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [error, setError] = useState("");
+
+  const [productLoading, setProductLoading] = useState(false);
+  const [categoryLoading, setCategoryLoading] = useState(false);
 
   const [filters, setFilters] = useState({
     limit: 10,
     sort: "latest",
-    searchText: "",
+    searchText: " ",
+    categoryIds: [],
   });
 
-  const fetchProducts() = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/products",
-        {
-          params: filters,
-        }
-      );
-
-      setProducts(response.data.data.products);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    fetchProducts()
+    const fetchInitialData = async () => {
+      try {
+        setProductLoading(true);
+        setCategoryLoading(true);
+        setError("");
+
+        const [productsRes, categoryRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/products?categoryIds=${filters.categoryIds.join()}&limit=${filters.limit}&sort=${filters.sort}&searchText${filters.searchText}`, {
+            params: filters,
+          }),
+
+          axios.get("http://localhost:5000/api/category"),
+        ]);
+
+        setProducts(productsRes.data.data.products);
+        setCategories(categoryRes.data.data);
+      } catch (err) {
+        console.log(err);
+        setError("Failed to fetch products and categories");
+      } finally {
+        setProductLoading(false);
+        setCategoryLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, [filters]);
+
+
+  const changeCategory = (e, cat) => {
+    setFilters((prev) => {
+      let newCategoryIds = [...prev.categoryIds]
+
+      if(e.target.checked) {
+        newCategoryIds.push(cat.id)
+      }else{
+        newCategoryIds = newCategoryIds.filter(el => el!=cat.id)
+        }
+      return {
+        ...prev,
+        categoryIds: newCategoryIds,
+      };
+
+ });
+};
+  
 
   return (
     <div className="min-h-screen container mx-auto">
@@ -146,7 +190,7 @@ export default function Products() {
         </p>
       </div>
 
-      {/* Seller Button */}
+      {/* Add Product Button */}
       <Link to="/seller/product/add">
         <button className="flex items-center gap-2 bg-pink-600 hover:bg-purple-600 text-white px-4 py-3 rounded-xl mt-4 transition">
           Product <Plus size={18} />
@@ -155,75 +199,56 @@ export default function Products() {
 
       <div className="flex gap-10 px-5 py-8">
         {/* Sidebar */}
-        <aside className="w-42.25 shrink-0">
+        <aside className="w-52 shrink-0">
           {/* Categories */}
-          <div className="mb-8">
+          <div className="mb-7">
             <SectionTitle>Categories</SectionTitle>
 
-            <div className="flex flex-col mt-2">
-              <label className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={selectedCategory === ""}
-                  onChange={() => setSelectedCategory("")}
-                />
-                All Products
-              </label>
+            <div className="flex flex-col">
+              {categories.map((cat) => (
+                <div>
+                  <div className={`flex items-center gap-2 ${cat.parentId ? "pl-8" : ""}`}>
+                    <input 
+                    id={`cat-${cat.id}`} 
+                    type="checkbox" 
+                    className="rounded" 
+                    onChange= {(e) => {
+                      changeCategory(e, cat);
+                    }}/>
+                  <label htmlFor={`cat-${cat.id}`}>{cat.title}</label>
+                  </div>
 
-              <label className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={selectedCategory === "electronics"}
-                  onChange={() => setSelectedCategory("electronics")}
-                />
-                Electronics
-              </label>
-
-              <label className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={selectedCategory === "fashion"}
-                  onChange={() => setSelectedCategory("fashion")}
-                />
-                Fashion
-              </label>
-
-              <label className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={selectedCategory === "accessories"}
-                  onChange={() => setSelectedCategory("accessories")}
-                />
-                Accessories
-              </label>
-            </div>
-          </div>
-
-          {/* Price Filter */}
-          <div>
-            <SectionTitle>Price Filter</SectionTitle>
-
-            <div className="flex flex-col mt-2">
-              {priceRanges.map((range) => (
-                <label
-                  key={range}
-                  className="flex items-center gap-2 text-xs text-gray-500 py-1 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    checked={selectedPrice === range}
-                    onChange={() => setSelectedPrice(range)}
-                  />
-
-                  {range}
-                </label>
+                  {cat.subCategories?.map((sub) => (
+                    <div className={`flex items-center gap-2 ${sub.parentId ? "pl-6" : ""}`}>
+                      <input 
+                      id={`cat-${sub.id}`} 
+                      type="checkbox" 
+                      className="rounded"
+                      onChange= {(e) => {
+                      changeCategory(e, sub);
+                    }} />
+                    <label htmlFor={`cat-${sub.id}`}>{sub.title}</label>
+        
+                  
+                    </div>
+                    
+                  ))}
+                </div>
               ))}
             </div>
           </div>
+
         </aside>
 
         {/* Main */}
         <main className="flex-1">
+          {/* Error */}
+          {error && (
+            <p className="text-red-500 text-sm mb-4">
+              {error}
+            </p>
+          )}
+
           {/* Top Bar */}
           <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
             <div className="flex items-center gap-3">
@@ -267,30 +292,36 @@ export default function Products() {
           </div>
 
           {/* Products */}
-          <div className="flex flex-col gap-5">
-            {products.map((product: any) => (
-              <ProductCard
-                key={product.id}
-                product={{
-                  id: product.id,
-                  title: product.title,
-                  image: `http://localhost:5000/${product.images[0]?.path.replace(
-                    /\\/g,
-                    "/"
-                  )}`,
-                  price: product.price,
-                  description: product.description,
-                  rating: "★★★★★",
-                }}
-              />
-            ))}
-          </div>
+          {productLoading ? (
+            <p className="text-gray-400">
+              Loading products...
+            </p>
+          ) : (
+            <div className="flex flex-col gap-5">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    id: product.id,
+                    title: product.title,
+
+                    image: product.images?.[0]?.path
+                      ? `http://localhost:5000/${product.images[0].path.replace(
+                          /\\/g,
+                          "/"
+                        )}`
+                      : "/placeholder.png",
+
+                    price: product.price,
+                    description: product.description,
+                    rating: "★★★★★",
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </div>
-
-
-
-//fixing issues in product 
   );
 }
