@@ -78,8 +78,8 @@ export const getProducts = async (req: Request, res: Response) => {
       };
     }
 
-    if (req.query.searchText) {
-      searchText = req.query.searchText as string;
+    if (req.query.q) {
+      searchText = req.query.q as string;
     }
 
     if (req.query.limit) {

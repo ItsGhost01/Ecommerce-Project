@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { Link } from "react-router";
+import { Link,  useSearchParams } from "react-router";
 
 
 
@@ -115,23 +115,34 @@ export default function Products() {
 
   const [productLoading, setProductLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
+   const [searchParams, setSearchParams] = useSearchParams();
+
+   console.log("product page", searchParams.get("q"));
 
   const [filters, setFilters] = useState({
-    limit: 10,
-    sort: "latest",
-    searchText: " ",
+    // limit: 10,
+    // sort: "latest", // can be used be it is not URL related
+
+    // limit: searchParams.get("limit") || 10, 
     categoryIds: [],
   });
 
   useEffect(() => {
+
+    const searchText = searchParams.get("q") || "" ;
+    const limit = searchParams.get("limit") || 10 ;
+    const sort = searchParams.get("sort") || "";
+
     const fetchInitialData = async () => {
       try {
         setProductLoading(true);
         setCategoryLoading(true);
         setError("");
 
+        
+
         const [productsRes, categoryRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/products?categoryIds=${filters.categoryIds.join()}&limit=${filters.limit}&sort=${filters.sort}&searchText${filters.searchText}`, {
+          axios.get(`http://localhost:5000/api/products?categoryIds=${filters.categoryIds.join()}&limit=${limit}&sort=${sort}&q=${searchText}`, {
             params: filters,
           }),
 
@@ -150,7 +161,7 @@ export default function Products() {
     };
 
     fetchInitialData();
-  }, [filters]);
+  }, [filters, searchParams]);
 
 
   const changeCategory = (e, cat) => {
@@ -169,6 +180,29 @@ export default function Products() {
 
  });
 };
+
+const changePerPage = (e) => {
+
+  setFilters(prev => {
+    return {...prev, limit: e.target.value }
+  })
+
+
+   setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("limit", e.target.value);
+      return newParams;
+    });
+}
+
+const changeSort = (e) => {
+
+   setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("sort", e.target.value);
+      return newParams;
+    });
+}
   
 
   return (
@@ -257,12 +291,8 @@ export default function Products() {
               </span>
 
               <select
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    limit: Number(e.target.value),
-                  })
-                }
+                onChange={changePerPage}
+                value={filters.limit}
                 className="text-xs border border-gray-200 px-2 py-1 rounded-sm"
               >
                 <option value="2">2</option>
@@ -275,12 +305,14 @@ export default function Products() {
               </span>
 
               <select
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    sort: e.target.value,
-                  })
-                }
+
+              onChange = {changeSort}
+                // onChange={(e) =>
+                //   setFilters({
+                //     ...filters,
+                //     sort: e.target.value,
+                //   })
+                // }
                 className="text-xs border border-gray-200 px-2 py-1 rounded-sm"
               >
                 <option value="latest">Newest</option>

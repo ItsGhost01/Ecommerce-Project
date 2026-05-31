@@ -8,7 +8,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Link, useLocation, useSearchParams } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { useState } from "react";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/features/userSlice";
@@ -16,18 +16,18 @@ import { useSelector, useDispatch } from "react-redux";
 
 
 export default function Header() {
+  
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
+  const [searchParams, setSearchParams] = useSearchParams();
+
 
   const reduxUser = useSelector(
     (globalstore: RootState) => globalstore.user.value,
   );
-  
-  const [menuOpen, setMenuOpen] = useState(false);
-  const dispatch = useDispatch();
 
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   console.log("query: q:", searchParams.get("q"));
 
@@ -40,6 +40,12 @@ export default function Header() {
       newParams.set("q", e.target.searchText.value);
       return newParams;
     });
+
+
+    if(location.pathname !== "/products") {
+      navigate ("/products?q=" + e.target.searchText.value)
+    }
+    
   }
 
   return (
@@ -132,7 +138,9 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <form onSubmit= {handleSubmit}className="flex">
+            <form 
+            defaultValue={searchParams.get("q") || ""}
+            onSubmit= {handleSubmit}className="flex">
               <input
                 type="text"
                 placeholder="Search..."
