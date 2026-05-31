@@ -91,7 +91,10 @@ export default function Header() {
             </div>
 
             {reduxUser && (
-              <ShoppingCart />
+              
+<button className="px-2 py-2 cursor-pointer hover:scale-95 active:scale-95 transition" onClick={() => navigate("/cart")}>
+  <ShoppingCart />
+</button>
             )}
             
           </div>
@@ -135,13 +138,16 @@ export default function Header() {
              <Link className="hover:text-[#FB2E86]" to="/About">
               About
             </Link>
+              <Link className="hover:text-[#FB2E86]" to="/Cart">
+              Cart
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
             <form 
-            defaultValue={searchParams.get("q") || ""}
             onSubmit= {handleSubmit}className="flex">
               <input
+              defaultValue={searchParams.get("q") || ""}
                 type="text"
                 placeholder="Search..."
                 name="searchText"

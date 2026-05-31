@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, ShoppingCart } from "lucide-react";
 import { Link,  useSearchParams } from "react-router";
+
+import type { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 
 
@@ -57,7 +61,23 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
+    const reduxUser = useSelector(
+    (globalstore: RootState) => globalstore.user.value,
+  );
+
+  const addToCart = () => {
+    if (!reduxUser) {
+      toast.error("Login Required");
+      return;
+    } // Login required to add to cart
+   
+  };
+
   return (
+
+    
+
+
     <div className="flex bg-white border border-gray-100 rounded-sm overflow-hidden hover:shadow-lg transition duration-300">
       <div
         className="shrink-0 overflow-hidden bg-gray-50"
@@ -81,7 +101,7 @@ function ProductCard({ product }: ProductCardProps) {
           {product.title}
         </h2>
 
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 ">
           {product.oldPrice && (
             <span className="text-xs text-gray-400 line-through">
               ${product.oldPrice}
@@ -98,12 +118,17 @@ function ProductCard({ product }: ProductCardProps) {
           >
             {product.rating}
           </span>
+            <button onClick={addToCart} 
+            type="button" 
+            className="flex items-center gap-2 bg-pink-600 hover:bg-purple-600 text-white px-4 py-3 rounded-2xl">Add to Cart <ShoppingCart/></button>
         </div>
 
         <p className="text-xs text-gray-400 leading-relaxed max-w-lg">
           {product.description}
         </p>
+  
       </div>
+          
     </div>
   );
 }
@@ -123,7 +148,8 @@ export default function Products() {
     // limit: 10,
     // sort: "latest", // can be used be it is not URL related
 
-    // limit: searchParams.get("limit") || 10, 
+    limit: searchParams.get("limit") || 10, 
+    sort: searchParams.get("sort") || "latest",
     categoryIds: [],
   });
 
@@ -131,7 +157,7 @@ export default function Products() {
 
     const searchText = searchParams.get("q") || "" ;
     const limit = searchParams.get("limit") || 10 ;
-    const sort = searchParams.get("sort") || "";
+    const sort = searchParams.get("sort") || "latest";
 
     const fetchInitialData = async () => {
       try {
@@ -186,8 +212,6 @@ const changePerPage = (e) => {
   setFilters(prev => {
     return {...prev, limit: e.target.value }
   })
-
-
    setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       newParams.set("limit", e.target.value);
@@ -197,6 +221,10 @@ const changePerPage = (e) => {
 
 const changeSort = (e) => {
 
+  setFilters(prev => {
+    return {...prev, limit: e.target.value }
+  })
+
    setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       newParams.set("sort", e.target.value);
@@ -204,6 +232,9 @@ const changeSort = (e) => {
     });
 }
   
+    const reduxUser = useSelector(
+    (globalstore: RootState) => globalstore.user.value,
+  );
 
   return (
     <div className="min-h-screen container mx-auto">
@@ -225,11 +256,13 @@ const changeSort = (e) => {
       </div>
 
       {/* Add Product Button */}
-      <Link to="/seller/product/add">
-        <button className="flex items-center gap-2 bg-pink-600 hover:bg-purple-600 text-white px-4 py-3 rounded-xl mt-4 transition">
-          Product <Plus size={18} />
-        </button>
-      </Link>
+   {reduxUser?.isSeller && (
+  <Link to="/seller/product/add">
+    <button className="flex items-center gap-2 bg-pink-600 hover:bg-purple-600 text-white px-4 py-3 rounded-xl mt-4 transition">
+      Product <Plus size={18} />
+    </button>
+  </Link>
+)}
 
       <div className="flex gap-10 px-5 py-8">
         {/* Sidebar */}
@@ -307,12 +340,14 @@ const changeSort = (e) => {
               <select
 
               onChange = {changeSort}
+              
                 // onChange={(e) =>
                 //   setFilters({
                 //     ...filters,
                 //     sort: e.target.value,
                 //   })
                 // }
+                   value={filters.sort}
                 className="text-xs border border-gray-200 px-2 py-1 rounded-sm"
               >
                 <option value="latest">Newest</option>

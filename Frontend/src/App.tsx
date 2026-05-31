@@ -19,6 +19,7 @@ import AdminRootLayout from "./components/layout/admin/AdminRootLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import type { RootState } from "@reduxjs/toolkit/query";
 import Contact from "./pages/Contact";
+import Cart from "./pages/Cart";
 
 function App() {
   const reduxUser = useSelector(
@@ -86,6 +87,8 @@ function App() {
         { path: "/products", Component: Products },
         { path: "/Contact", Component: Contact },
          { path: "/About", Component: About },
+          { path: "/Cart", Component: Cart},
+
         {
           path: "",
           Component: ProtectedRoute,

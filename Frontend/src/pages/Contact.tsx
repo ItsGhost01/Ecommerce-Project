@@ -153,7 +153,7 @@ export default function Contact() {
               
 
                 <textarea
-                  rows="7"
+                  // rows="7"
                   placeholder="Type Your Message*"
                   className="w-full border border-gray-300 px-4 py-4 rounded outline-none resize-none focus:border-[#7e33e0]"
                 ></textarea>
