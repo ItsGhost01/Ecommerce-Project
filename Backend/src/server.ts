@@ -1,8 +1,10 @@
 import express from "express";
 import "./models/index.js"
 import authRoute from "./routes/auth";
-import productRoute from "./routes/product";
-import categoryRoute from "./routes/category";
+import productRoute from "./routes/product.js";
+//@ts-ignore
+import categoryRoute from "./routes/category.js";
+import cartRoute from "./routes/cart.js";
 
 
 
@@ -35,6 +37,7 @@ app.use("/api", authRoute);
 app.use("/api", productRoute);
 app.use("/api/auth", authRoute);
 app.use("/api", categoryRoute);
+app.use("/api", cartRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

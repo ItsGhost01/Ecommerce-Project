@@ -8,8 +8,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 
-
-
 const accentGold = "#C8A96E";
 
 const serifFont = {
@@ -154,7 +152,6 @@ export default function Products() {
   });
 
   useEffect(() => {
-
     const searchText = searchParams.get("q") || "" ;
     const limit = searchParams.get("limit") || 10 ;
     const sort = searchParams.get("sort") || "latest";
