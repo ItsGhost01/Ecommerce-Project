@@ -1,10 +1,13 @@
 import express from "express";
-import "./models/index.js"
+import cartRoute from "./routes/cart.js";
 import authRoute from "./routes/auth";
 import productRoute from "./routes/product.js";
 //@ts-ignore
 import categoryRoute from "./routes/category.js";
-import cartRoute from "./routes/cart.js";
+import "./models/index.js"
+
+
+
 
 
 
@@ -42,6 +45,8 @@ app.use("/api", cartRoute);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

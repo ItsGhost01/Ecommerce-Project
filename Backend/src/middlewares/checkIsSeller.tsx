@@ -7,7 +7,7 @@ const checkIsSeller = (req: Request, res: Response, next: NextFunction) => {
   }
   else{
       
-      return res.status(403).send({
+      return res.status(403).send({  
           msg: "Acesss denied"
         })
   }

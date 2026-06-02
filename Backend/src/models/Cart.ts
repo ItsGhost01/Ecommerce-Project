@@ -1,50 +1,39 @@
-import { sequelize } from '../connections/database';
-import {DataTypes} from 'sequelize'
-import User from './User';
-import Product from './Product';
+import { DataTypes } from 'sequelize'
+import {sequelize} from "../connections/database.js";
+import User from './User.js';
+import Product from './Product.js';
 
 const Cart = sequelize.define(
-  'Cart',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-       references: {
-                model: User
-            },
-       allowNull: true, 
-    },
-    productId: {
-      type: DataTypes.INTEGER,
-       references: {
-                model: Product
-            },
-       allowNull: true, 
-    },
-     quantity: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-      allowNull: false,
-    },
+    'Cart',
+    {
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: User,
+                key: "id"
+            }
+        },
+        productId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: Product,
+                key: "id"
+            }
+        }
 
-
-
-  },
-  {
-    timestamps:true, 
-    tableName:"carts",
-    underscored:true,
-  },
-  
+    },
+    {
+        tableName: "carts",
+        timestamps: true,
+        underscored: true,
+    }
 );
 
-// Cart.hasMany(Cart, {
-//     foreignKey: "parentId",
-//     as: "subcarts"
-// })
-
-
-export default Cart;
+export default Cart

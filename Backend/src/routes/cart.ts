@@ -3,19 +3,17 @@ import express from "express";
 
 
 const router = express.Router()
-import { getCarts } from "../controllers/cart";
+import { getCart, addToCart } from "../controllers/cart";
 import checkAuthentication from "../middlewares/checkAuthentication ";
 
 
+// router.get("/carts", getCart);
 
 
+ // POST CART
+router.post("/cart/add", checkAuthentication, addToCart);
 
-router.get("/carts", getCarts);
-
- // CREATE PRODUCT
-// router.post("/seller/product/add", checkAuthentication, createProduct);
-
-// GET PRODUCTS
-router.get("/carts", checkAuthentication, getCarts);
+// GET CART
+router.get("/cart", checkAuthentication, getCart);
 
 export default router;

@@ -1,3 +1,4 @@
+import Cart from "./Cart.js"
 import Category from "./Category.js"
 import Product from "./Product.js"
 import ProductImage from "./ProductImage.js"
