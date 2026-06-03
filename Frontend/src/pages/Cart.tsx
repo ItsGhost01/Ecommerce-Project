@@ -18,3 +18,26 @@ export default function Cart() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+// fhafhafafgahfghafghahf
+///hfajfhjajfhajf hja aj jaf jha
+
+///fhaghagfhagfgajgfjagf
+//fahfjahfjahkjfghjkgfhjkalghfew
+//adfudhafajkfajfjkf
+///afhjahfjahfjkhaskjfhkjshagfjkhf
+
+///fashfjhajfksehgfejhsaguiwgfwgGEUGew
+
+//fbjegfgwfiuwfewgfhghjfgjhsfhje
+//dewgfhwghfjegsjhafejhsEFGJHWAFJHghjgfjheWFEWgfjhWVFJHvbfjehGFWkjfehiEUHFKJHGEUGfgfiulGGHKwjehfkj
+//fejhKJFHjkwfjkhkjHFJKHJW
