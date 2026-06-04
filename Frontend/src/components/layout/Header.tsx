@@ -9,10 +9,12 @@ import {
   X,
 } from "lucide-react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
-import { useState } from "react";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/features/userSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+
+
 
 
 export default function Header() {
@@ -22,6 +24,24 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const cart = useSelector((state: RootState) => state.cart);
+
+  const cartCount = cart?.total || 0;
+
+// Cart total count
+//   const [cartTotal, setCartTotal] = useState(0);
+
+// useEffect(() => {
+//   axios.get("http://localhost:5000/api/cart", {
+//     headers: {
+//       Authorization: `Bearer ${localStorage.getItem("token")}`,
+//     },
+//   })
+//   .then((res) => {
+//     setCartTotal(res.data.data.total);
+//   });
+// }, []);
 
 
   const reduxUser = useSelector(
@@ -92,8 +112,17 @@ export default function Header() {
 
             {reduxUser && (
               
-<button className="px-2 py-2 cursor-pointer hover:scale-95 active:scale-95 transition" onClick={() => navigate("/cart")}>
+<button
+  className="relative px-2 py-2 cursor-pointer hover:scale-95 active:scale-95 transition"
+  onClick={() => navigate("/cart")}
+>
   <ShoppingCart />
+
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+      {cartCount}
+    </span>
+  )}
 </button>
             )}
             

@@ -2,6 +2,7 @@ import Cart from "./Cart.js"
 import Category from "./Category.js"
 import Product from "./Product.js"
 import ProductImage from "./ProductImage.js"
+import User from "./User.js"
 
 
 Product.hasMany(ProductImage, {
@@ -17,4 +18,15 @@ Product.belongsTo(Category, {
 Category.hasMany(Product, {
     foreignKey: "categoryId",
     as: "products"
+})
+
+
+Cart.belongsTo(Product,  {
+    foreignKey: "productId",
+    as: "products"
+})
+
+Product.hasMany(Cart, {
+    foreignKey: "productId",
+    as: "carts"
 })

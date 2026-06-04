@@ -13,7 +13,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const product = await Product.create({
       title,
       categoryId: categoryId,
-      price,
+      price, 
       description,
       stock,
       image,

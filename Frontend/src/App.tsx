@@ -20,12 +20,19 @@ import Dashboard from "./pages/admin/Dashboard";
 import type { RootState } from "@reduxjs/toolkit/query";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
+import { setCartCount } from "./redux/features/cartSlice";
 
 function App() {
   const reduxUser = useSelector(
     (globalstore: RootState) => globalstore.user.value,
   );
 
+
+  const cartCount = useSelector(
+  (state: RootState) => state.cart.count
+);
+
+  
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
@@ -63,6 +70,19 @@ function App() {
       setIsLoading(false);
     }
   }, [reduxUser]);
+
+
+useEffect(() => {
+  axios
+    .get("http://localhost:5000/api/cart", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((res) => {
+      dispatch(setCartCount(res.data.data.total));
+    });
+}, [dispatch]);
 
   const router = createBrowserRouter([
     {

@@ -4,8 +4,9 @@ import { Plus, ShoppingCart } from "lucide-react";
 import { Link,  useSearchParams } from "react-router";
 
 import type { RootState } from "../../redux/store";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { setCartCount } from "../../redux/features/cartSlice";
 
 
 const accentGold = "#C8A96E";
@@ -63,18 +64,40 @@ function ProductCard({ product }: ProductCardProps) {
     (globalstore: RootState) => globalstore.user.value,
   );
 
-  const addToCart = () => {
-    if (!reduxUser) {
-      toast.error("Login Required");
-      return;
-    } // Login required to add to cart
-   
-  };
+
+
+
+
+const addToCart = () => {
+  if (!reduxUser) {
+    toast.error("Login Required");
+    return;
+  }
+
+  axios
+    .post(
+      "http://localhost:5000/api/cart/add",
+      {
+        productId: product.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+      
+    )
+    .then(() => {
+      toast.success("Added to Cart Successfully");
+  
+    })
+    .catch((err) => {
+      console.log(err.response?.data || err.message);
+      toast.error("Failed to add cart");
+    });
+};
 
   return (
-
-    
-
 
     <div className="flex bg-white border border-gray-100 rounded-sm overflow-hidden hover:shadow-lg transition duration-300">
       <div
@@ -116,7 +139,9 @@ function ProductCard({ product }: ProductCardProps) {
           >
             {product.rating}
           </span>
-            <button onClick={addToCart} 
+            <button onClick={() => {
+              addToCart(product.id);
+            }} 
             type="button" 
             className="flex items-center gap-2 bg-pink-600 hover:bg-purple-600 text-white px-4 py-3 rounded-2xl">Add to Cart <ShoppingCart/></button>
         </div>
