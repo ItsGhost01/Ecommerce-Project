@@ -54,9 +54,9 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import setCartCount from "../redux/features/userSlice";
+// import setCartCount from "../redux/features/userSlice";
 
 
 
@@ -93,7 +93,7 @@ function Cart() {
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch(); 
   // const [payment, setPayment] = useState<"cash" | "esewa">("cash");
 
   useEffect(() => {

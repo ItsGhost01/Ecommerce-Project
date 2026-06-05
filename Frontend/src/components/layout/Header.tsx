@@ -12,7 +12,8 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/features/userSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
 
@@ -25,23 +26,32 @@ export default function Header() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const cart = useSelector((state: RootState) => state.cart);
+  // const cart = useSelector((state: RootState) => state.cart);
 
-  const cartCount = cart?.total || 0;
+  // const cartCount = cart?.total || 0;
 
 // Cart total count
-//   const [cartTotal, setCartTotal] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
+  
 
-// useEffect(() => {
-//   axios.get("http://localhost:5000/api/cart", {
-//     headers: {
-//       Authorization: `Bearer ${localStorage.getItem("token")}`,
-//     },
-//   })
-//   .then((res) => {
-//     setCartTotal(res.data.data.total);
-//   });
-// }, []);
+  const fetchCartTotal = () => {
+  axios
+    .get("http://localhost:5000/api/cart", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((res) => {
+      setCartTotal(res.data.data.total);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+useEffect(() => {
+  fetchCartTotal();
+}, []);
 
 
   const reduxUser = useSelector(
@@ -118,9 +128,9 @@ export default function Header() {
 >
   <ShoppingCart />
 
-  {cartCount > 0 && (
+  {cartTotal> 0 && (
     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-      {cartCount}
+      {cartTotal}
     </span>
   )}
 </button>
@@ -167,9 +177,11 @@ export default function Header() {
              <Link className="hover:text-[#FB2E86]" to="/About">
               About
             </Link>
+              {reduxUser && (
               <Link className="hover:text-[#FB2E86]" to="/Cart">
               Cart
             </Link>
+              )}
           </div>
 
           <div className="flex items-center gap-3">

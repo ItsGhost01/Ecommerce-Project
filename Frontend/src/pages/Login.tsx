@@ -3,11 +3,13 @@ import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/features/userSlice";
-import { Eye } from "lucide-react";
+import { Eye, EyeClosed } from "lucide-react";
+import { useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,13 +67,22 @@ export default function Login() {
           <div className="relative">
             <input
               defaultValue={"123456"}
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               className="w-full border border-gray-300 px-4 py-3 pr-12 outline-none text-sm focus:border-[#FB2E86] transition"
             />
-
-            <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 cursor-pointer" />
+            {showPassword ? (
+              <Eye
+                onClick={() => setShowPassword(false)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FB2E86] w-5 h-5 cursor-pointer"
+              />
+            ) : (
+              <EyeClosed
+                onClick={() => setShowPassword(true)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 cursor-pointer"
+              />
+            )}
           </div>
 
           {/* Forgot Password */}

@@ -4,9 +4,10 @@ import { Plus, ShoppingCart } from "lucide-react";
 import { Link,  useSearchParams } from "react-router";
 
 import type { RootState } from "../../redux/store";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { setCartCount } from "../../redux/features/cartSlice";
+// import { setCartCount } from "../../redux/features/cartSlice";
+
 
 
 const accentGold = "#C8A96E";
@@ -84,6 +85,7 @@ const addToCart = () => {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
+       
       }
       
     )

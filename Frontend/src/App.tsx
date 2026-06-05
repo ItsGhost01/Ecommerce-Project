@@ -20,7 +20,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import type { RootState } from "@reduxjs/toolkit/query";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
-import { setCartCount } from "./redux/features/cartSlice";
+// import { setCartCount } from "./redux/features/cartSlice";
 
 function App() {
   const reduxUser = useSelector(
@@ -28,9 +28,9 @@ function App() {
   );
 
 
-  const cartCount = useSelector(
-  (state: RootState) => state.cart.count
-);
+//   const cartCount = useSelector(
+//   (state: RootState) => state.cart.count
+// );
 
   
   const [isLoading, setIsLoading] = useState(true);
@@ -72,17 +72,17 @@ function App() {
   }, [reduxUser]);
 
 
-useEffect(() => {
-  axios
-    .get("http://localhost:5000/api/cart", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((res) => {
-      dispatch(setCartCount(res.data.data.total));
-    });
-}, [dispatch]);
+// useEffect(() => {
+//   axios
+//     .get("http://localhost:5000/api/cart", {
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem("token")}`,
+//       },
+//     })
+//     .then((res) => {
+//       dispatch(setCartCount(res.data.data.total));
+//     });
+// }, [dispatch]);
 
   const router = createBrowserRouter([
     {
@@ -107,12 +107,15 @@ useEffect(() => {
         { path: "/products", Component: Products },
         { path: "/Contact", Component: Contact },
          { path: "/About", Component: About },
-          { path: "/Cart", Component: Cart},
+      
 
         {
           path: "",
           Component: ProtectedRoute,
-          children: [{ path: "/orders", Component: Orders }],
+          children: [{ path: "/orders", Component: Orders },
+                { path: "/Cart", Component: Cart},
+          ],
+          
         },
 
         {
