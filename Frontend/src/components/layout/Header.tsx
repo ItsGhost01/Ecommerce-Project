@@ -8,74 +8,60 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
+
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
+
 import type { RootState } from "../../redux/store";
+import type { AppDispatch } from "../../redux/store";
+
 import { logout } from "../../redux/features/userSlice";
+import { fetchCarts } from "../../redux/features/cartSlice";
+
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-
-
 
 export default function Header() {
-  
   const [menuOpen, setMenuOpen] = useState(false);
-  const dispatch = useDispatch();
+
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // const cart = useSelector((state: RootState) => state.cart);
-
-  // const cartCount = cart?.total || 0;
-
-// Cart total count
-  const [cartTotal, setCartTotal] = useState(0);
-  
-
-  const fetchCartTotal = () => {
-  axios
-    .get("http://localhost:5000/api/cart", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((res) => {
-      setCartTotal(res.data.data.total);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
-useEffect(() => {
-  fetchCartTotal();
-}, []);
-
-
   const reduxUser = useSelector(
-    (globalstore: RootState) => globalstore.user.value,
+    (state: RootState) => state.user.value
   );
 
+  const reduxCart = useSelector(
+    (state: RootState) => state.cart.total
+  );
 
-  console.log("query: q:", searchParams.get("q"));
+  // 🔥 FETCH CART ON LOAD
+  useEffect(() => {
+    if (reduxUser) {
+      dispatch(fetchCarts());
+    }
+  }, [dispatch, reduxUser]);
 
-  function handleSubmit(e) {
+  function handleSubmit(e: any) {
     e.preventDefault();
-    e.target.searchText;
+
+    const value = e.target.searchText.value;
 
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      newParams.set("q", e.target.searchText.value);
+      newParams.set("q", value);
       return newParams;
     });
 
-
-    if(location.pathname !== "/products") {
-      navigate ("/products?q=" + e.target.searchText.value)
+    if (location.pathname !== "/products") {
+      navigate("/products?q=" + value);
     }
-    
   }
 
   return (
@@ -86,11 +72,11 @@ useEffect(() => {
           <div className="flex gap-8">
             <div className="flex gap-2 items-center">
               <Mail />
-              <span>Shrestha.sumit1371@gmail.com</span>
+              <span>email@example.com</span>
             </div>
             <div className="flex gap-2 items-center">
               <Phone />
-              <span>(122345)67890</span>
+              <span>1234567890</span>
             </div>
           </div>
 
@@ -101,10 +87,9 @@ useEffect(() => {
                   <span>
                     {reduxUser.firstName} {reduxUser.lastName}
                   </span>
-                  <span className="hover:underline cursor-pointer"
-                    onClick={() => {
-                      dispatch(logout());
-                    }}
+                  <span
+                    className="hover:underline cursor-pointer"
+                    onClick={() => dispatch(logout())}
                   >
                     logout
                   </span>
@@ -121,29 +106,26 @@ useEffect(() => {
             </div>
 
             {reduxUser && (
-              
-<button
-  className="relative px-2 py-2 cursor-pointer hover:scale-95 active:scale-95 transition"
-  onClick={() => navigate("/cart")}
->
-  <ShoppingCart />
+              <button
+                className="relative px-2 py-2 cursor-pointer hover:scale-95 active:scale-95 transition"
+                onClick={() => navigate("/cart")}
+              >
+                <ShoppingCart />
 
-  {cartTotal> 0 && (
-    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-      {cartTotal}
-    </span>
-  )}
-</button>
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                  {reduxCart}
+                </span>
+              </button>
             )}
-            
           </div>
         </div>
       </div>
 
+      {/* NAVBAR */}
       <nav className="container">
         <div className="py-3 md:py-5 flex items-center justify-between">
           <Link to="/">
-          <span className="font-josefin font-bold text-3xl">Hekto</span>
+            <span className="font-josefin font-bold text-3xl">Hekto</span>
           </Link>
 
           <div
@@ -157,49 +139,38 @@ useEffect(() => {
               onClick={() => setMenuOpen(false)}
               className="lg:hidden cursor-pointer self-end"
             />
-            <Link className="hover:text-[#FB2E86]" to="/">
-              Home
-            </Link>
-            {/* <Link className="hover:text-[#FB2E86]" to="/Pages">
-              Pages
-            </Link> */}
-            <Link className="hover:text-[#FB2E86]" to="/Products">
-              Products
-            </Link>
-            {reduxUser && (
-              <Link className="hover:text-[#FB2E86]" to="/Orders">
-                Orders
-              </Link>
-            )}
-            <Link className="hover:text-[#FB2E86]" to="/Contact">
-              Contact
-            </Link>
-             <Link className="hover:text-[#FB2E86]" to="/About">
-              About
-            </Link>
-              {reduxUser && (
-              <Link className="hover:text-[#FB2E86]" to="/Cart">
-              Cart
-            </Link>
-              )}
+
+            <Link to="/">Home</Link>
+            <Link to="/Products">Products</Link>
+
+            {reduxUser && <Link to="/Orders">Orders</Link>}
+
+            <Link to="/Contact">Contact</Link>
+            <Link to="/About">About</Link>
+
+            {reduxUser && <Link to="/Cart">Cart</Link>}
           </div>
 
+          {/* SEARCH */}
           <div className="flex items-center gap-3">
-            <form 
-            onSubmit= {handleSubmit}className="flex">
+            <form onSubmit={handleSubmit} className="flex">
               <input
-              defaultValue={searchParams.get("q") || ""}
+                defaultValue={searchParams.get("q") || ""}
                 type="text"
-                placeholder="Search..."
                 name="searchText"
+                placeholder="Search..."
                 className="border border-black px-2 py-1 text-sm"
               />
-              <button className="text-white bg-[#FB2E86] px-2 py-1 cursor-pointer hover:bg-pink-600">
+
+              <button className="text-white bg-[#FB2E86] px-2 py-1">
                 <Search />
               </button>
             </form>
 
-            <button className="lg:hidden" onClick={() => setMenuOpen(true)}>
+            <button
+              className="lg:hidden"
+              onClick={() => setMenuOpen(true)}
+            >
               <Menu />
             </button>
           </div>

@@ -4,9 +4,11 @@ import { Plus, ShoppingCart } from "lucide-react";
 import { Link,  useSearchParams } from "react-router";
 
 import type { RootState } from "../../redux/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-// import { setCartCount } from "../../redux/features/cartSlice";
+import { fetchCarts} from "../../redux/features/cartSlice";
+import type { AppDispatch } from "../../redux/store";
+
 
 
 
@@ -67,7 +69,7 @@ function ProductCard({ product }: ProductCardProps) {
 
 
 
-
+const dispatch = useDispatch<AppDispatch>();
 
 const addToCart = () => {
   if (!reduxUser) {
@@ -90,6 +92,7 @@ const addToCart = () => {
       
     )
     .then(() => {
+      dispatch(fetchCarts())
       toast.success("Added to Cart Successfully");
   
     })

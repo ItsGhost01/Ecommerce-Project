@@ -54,10 +54,14 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-// import setCartCount from "../redux/features/userSlice";
+import { fetchCarts } from "../redux/features/cartSlice";
 
+
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../redux/store";
+
+import AddtoCart from "../assets/AddtoCart.svg";
 
 
 
@@ -96,6 +100,8 @@ function Cart() {
     // const dispatch = useDispatch(); 
   // const [payment, setPayment] = useState<"cash" | "esewa">("cash");
 
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -117,15 +123,21 @@ function Cart() {
   }, []);
 
 
+  const dispatch = useDispatch<AppDispatch>();
 
-  const removeItem = async (id: number) => {
+
+const removeItem = async (id: number) => {
   try {
     await axios.delete(`http://localhost:5000/api/cart/${id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
 
-    // Remove from local state so UI updates immediately
     setCarts((prev) => prev.filter((item) => item.id !== id));
+
+    // 🔥 sync redux header
+    dispatch(fetchCarts());
 
     toast.success("Item removed from cart");
   } catch (error: any) {
@@ -142,6 +154,7 @@ function Cart() {
 
     // empty state
    setCarts([]);
+   dispatch(fetchCarts());
 
     toast.success("Cart cleared successfully");
   } catch (error: any) {
@@ -228,6 +241,10 @@ const subtotal = carts.reduce(
               </div>
             ) : carts.length === 0 ? (
               <div className="py-16 text-center text-[#b0b8d0] text-sm">
+                <svg> 
+                    <img src={AddtoCart} alt="cart" className="mx-auto mb-3 w-12 h-12" />
+
+                </svg>
                 🛒 Your cart is empty.
               </div>
             ) : (
