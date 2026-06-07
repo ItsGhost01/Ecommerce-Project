@@ -1,8 +1,6 @@
 // import axios from "axios";
 // import { useEffect, useState } from "react"
 
-
-
 // export default function Cart() {
 
 // const [carts, setCarts] = useState([]);
@@ -15,7 +13,7 @@
 //   })
 //   .then((res) => {
 //     setCarts(res.data.data ?? []);
- 
+
 //   })
 //   .catch((error) => {
 //     console.error("Error fetching carts:", error);
@@ -23,12 +21,6 @@
 // }, []);
 
 //   return (
-
-
-  
-
-
-
 
 //     <div className="max-w-4xl mx-auto p-6">
 //       {/* Heading */}
@@ -47,24 +39,29 @@
 //       </div>
 //     </div>
 
-  
 //   );
 // }
-
 
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetchCarts } from "../redux/features/cartSlice";
-
-
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
+import { Link } from "react-router";
 
-import AddtoCart from "../assets/AddtoCart.svg";
+// React Hook Form Implmentation
+import type { SubmitHandler } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+import { useForm } from "react-hook-form";
 
-
-
+type FormValues = {
+  fullName: string;
+  phoneNumber: number;
+  address: string;
+  orderNote: string;
+  city: string;
+};
 
 interface ProductImage {
   id: number;
@@ -91,16 +88,32 @@ function Cart() {
   const [carts, setCarts] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
-  const [address, setAddress] = useState("");
-  const [note, setNote] = useState("");
-
-    // const dispatch = useDispatch(); 
+  // no need for this in react hook form
+  // const [name, setName] = useState("");
+  // const [phone, setPhone] = useState("");
+  // const [city, setCity] = useState("");
+  // const [address, setAddress] = useState("");
+  // const [note, setNote] = useState("");
   // const [payment, setPayment] = useState<"cash" | "esewa">("cash");
 
+  const form = useForm<FormValues>();
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = form;
 
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    console.log(data);
+
+    // API call here
+    // axios.post("/api/order", data);
+
+    toast.success("Order placed successfully!");
+    reset();
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -113,7 +126,6 @@ function Cart() {
       })
       .then((res) => {
         setCarts(res.data?.data.cartData || []); // ✅ FIXED safe access
-  
       })
       .catch((error) => {
         console.error("Error fetching carts:", error);
@@ -122,81 +134,79 @@ function Cart() {
       .finally(() => setLoading(false));
   }, []);
 
-
   const dispatch = useDispatch<AppDispatch>();
 
+  const removeItem = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/cart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-const removeItem = async (id: number) => {
-  try {
-    await axios.delete(`http://localhost:5000/api/cart/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+      setCarts((prev) => prev.filter((item) => item.id !== id));
 
-    setCarts((prev) => prev.filter((item) => item.id !== id));
+      // 🔥 sync redux header
+      dispatch(fetchCarts());
 
-    // 🔥 sync redux header
-    dispatch(fetchCarts());
-
-    toast.success("Item removed from cart");
-  } catch (error: any) {
-    console.log(error.response?.data || error.message);
-    toast.error("Failed to remove item");
-  }
-};
+      toast.success("Item removed from cart");
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      toast.error("Failed to remove item");
+    }
+  };
 
   const clearItem = async () => {
-  try {
-    await axios.delete(`http://localhost:5000/api/cart/clear`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
+    try {
+      await axios.delete(`http://localhost:5000/api/cart/clear`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
 
-    // empty state
-   setCarts([]);
-   dispatch(fetchCarts());
+      // empty state
+      setCarts([]);
+      dispatch(fetchCarts());
 
-    toast.success("Cart cleared successfully");
-  } catch (error: any) {
-    console.log(error.response?.data || error.message);
-    toast.error("Failed to clear cart");
-  }
-};
-  
-  const updateQty = (productId: number, quantity:number, id: number, value: number) => {
+      toast.success("Cart cleared successfully");
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      toast.error("Failed to clear cart");
+    }
+  };
 
-    console.log({value})
-    console.log({id})
-     axios
-    .post(
+  const updateQty = (
+    productId: number,
+    quantity: number,
+    id: number,
+    value: number,
+  ) => {
+    console.log({ value });
+    console.log({ id });
+    axios.post(
       "http://localhost:5000/api/cart/add",
       {
         productId: productId,
-        quantity: quantity + value
+        quantity: quantity + value,
       },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    )
+      },
+    );
 
     setCarts((prev) =>
       prev.map((item) =>
         item.id === id
           ? { ...item, quantity: Math.max(1, item.quantity + value) }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
-const subtotal = carts.reduce(
-  (sum, item) => {
+  const subtotal = carts.reduce((sum, item) => {
     const price = parseFloat(item.products?.price || "0");
     return sum + price * item.quantity;
-  },
-  0
-);
+  }, 0);
 
   const getImageUrl = (item: CartItem) => {
     const img = item.products.images?.[0]?.path;
@@ -204,28 +214,16 @@ const subtotal = carts.reduce(
     return `http://localhost:5000/${img.replace(/\\/g, "/")}`;
   };
 
-  const handlePlaceOrder = () => {
-    if (!name || !phone || !city || !address) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    console.log("Order placed");
-  };
-
   return (
     <div className="min-h-screen bg-[#f8f9fc] px-6 py-10 text-[#1a1f36]">
-      <div className="mx-auto max-w-[1200px]">
-
+      <div className="mx-auto max-w-300">
         <h1 className="text-2xl font-bold text-[#1a2e6f] mb-8 tracking-tight">
           Shopping Cart
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
-
           {/* ── Left: Product Table ── */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-
             {/* Table Header */}
             <div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1fr] px-6 py-4 border-b border-[#eceef5] text-[11px] font-semibold text-[#8892b0] uppercase tracking-widest">
               <span>Product</span>
@@ -240,12 +238,19 @@ const subtotal = carts.reduce(
                 Loading your cart…
               </div>
             ) : carts.length === 0 ? (
-              <div className="py-16 text-center text-[#b0b8d0] text-sm">
-                <svg> 
-                    <img src={AddtoCart} alt="cart" className="mx-auto mb-3 w-12 h-12" />
+              <div className="py-16 text-center text-black text-2xl relative">
+                <img
+                  src="/AddtoCart.svg"
+                  alt="empty cart"
+                  className="mx-auto mb-4 w-40 h-40"
+                />
 
-                </svg>
-                🛒 Your cart is empty.
+                <p className="mb-4">🛒 Your cart is empty.</p>
+                <Link to="/Products">
+                  <button className="bg-[#ff2d6b] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer">
+                    Continue Shopping
+                  </button>
+                </Link>
               </div>
             ) : (
               carts.map((item) => {
@@ -262,15 +267,17 @@ const subtotal = carts.reduce(
                     <div className="flex items-center gap-4 relative">
                       <button
                         title="Remove"
-                        onClick={()=> {
-                          {removeItem(item.id)}
+                        onClick={() => {
+                          {
+                            removeItem(item.id);
+                          }
                         }}
                         className="absolute -top-1 -left-2 w-5 h-5 rounded-full bg-[#1a2e6f] text-white text-[10px] flex items-center justify-center hover:bg-[#ff2d6b] transition-colors cursor-pointer z-10"
                       >
                         ✕
                       </button>
 
-                      <div className="w-[68px] h-[68px] rounded-xl overflow-hidden shrink-0 bg-[#eceef5]">
+                      <div className="w-17 h-17 rounded-xl overflow-hidden shrink-0 bg-[#eceef5]">
                         {imgUrl ? (
                           <img
                             src={imgUrl}
@@ -291,7 +298,7 @@ const subtotal = carts.reduce(
                         <p className="text-xs text-[#8892b0] line-clamp-2 leading-relaxed">
                           {item.products.description}
                         </p>
-                        <p className="text-[11px] text-[#b0b8d0] mt-0.5">
+                        <p className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-[#ff2d6b]  text-white text-xs font-semibold mt-2">
                           {item.products.stock} in stock
                         </p>
                       </div>
@@ -306,7 +313,14 @@ const subtotal = carts.reduce(
                     <div className="flex justify-center">
                       <div className="flex items-center border border-[#dde1f0] rounded-lg overflow-hidden bg-[#f8f9fc]">
                         <button
-                          onClick={() => updateQty(item.productId , item.quantity, item.id,  -1)}
+                          onClick={() =>
+                            updateQty(
+                              item.productId,
+                              item.quantity,
+                              item.id,
+                              -1,
+                            )
+                          }
                           className="w-8 h-8 flex items-center justify-center text-[#5a6488] hover:bg-[#eceef5] hover:text-[#1a2e6f] transition-colors cursor-pointer"
                         >
                           −
@@ -315,7 +329,14 @@ const subtotal = carts.reduce(
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQty(item.productId, item.quantity, item.id, + 1)}
+                          onClick={() =>
+                            updateQty(
+                              item.productId,
+                              item.quantity,
+                              item.id,
+                              +1,
+                            )
+                          }
                           className="w-8 h-8 flex items-center justify-center text-[#5a6488] hover:bg-[#eceef5] hover:text-[#1a2e6f] transition-colors cursor-pointer"
                         >
                           +
@@ -334,10 +355,6 @@ const subtotal = carts.reduce(
 
             {/* Bottom Buttons */}
             <div className="flex items-center justify-between px-6 py-5 border-t border-[#eceef5] bg-[#fafbff]">
-              <button className="bg-[#ff2d6b] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer">
-                Update Cart
-              </button>
-
               <button
                 onClick={() => clearItem()}
                 className="bg-[#ff2d6b] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer"
@@ -349,7 +366,6 @@ const subtotal = carts.reduce(
 
           {/* ── Right: Order Panel ── */}
           <div className="bg-[#eef0f8] rounded-2xl p-7 flex flex-col gap-0">
-
             <h2 className="text-[17px] font-bold text-[#1a2e6f] text-center mb-5 tracking-wide">
               Order Summary
             </h2>
@@ -374,43 +390,153 @@ const subtotal = carts.reduce(
               Delivery Details
             </h2>
 
-            <div className="flex flex-col gap-4">
-              {[
-                { label: "Full Name", value: name, set: setName, required: true },
-                { label: "Phone Number", value: phone, set: setPhone, required: true },
-                { label: "City / District", value: city, set: setCity, required: true },
-                { label: "Order Note", value: note, set: setNote, required: false },
-              ].map((field) => (
-                <div key={field.label}>
-                  <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
-                    {field.label}
-                  </p>
-                  <input
-                    value={field.value}
-                    onChange={(e) => field.set(e.target.value)}
-                    className="w-full border-b border-[#c8cce0] bg-transparent text-sm outline-none"
-                  />
-                </div>
-              ))}
-
-              <textarea
-                placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </div>
-
-            <button
-              onClick={handlePlaceOrder}
-              className="w-full mt-5 bg-green-500 text-white font-bold py-4 rounded-xl"
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
             >
-              Place Order
-            </button>
-          </div>
+              {/* Full Name */}
+              <div>
+                <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
+                  Full Name
+                </p>
+                <input
+                  placeholder="Please enter your full Name"
+                  {...register("fullName", {
+                    required: "full Name is required",
+                  })}
+                  className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
+                />
+                {errors.fullName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.fullName.message}
+                  </p>
+                )}
+              </div>
 
+              {/* Phone Number */}
+              <div>
+                <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
+                  Phone Number
+                </p>
+                <input
+                  placeholder="Please enter your Phone Number"
+                  {...register("phoneNumber", {
+                    required: "phonenumber is required",
+                    valueAsNumber: true,
+                  })}
+                  className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
+                />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.phoneNumber.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Address */}
+              <div>
+                <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
+                  Address
+                </p>
+                <input
+                  placeholder="Please enter your full address"
+                  {...register("address", {
+                    required: "Address is required",
+                  })}
+                  className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
+                />
+                {errors.address && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.address.message}
+                  </p>
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
+                  City/District
+                </p>
+                <input
+                  placeholder="Please enter your City/District"
+                  {...register("city", {
+                    required: "City/District is required",
+                  })}
+                  className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
+                />
+                {errors.city && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.city.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Order Note */}
+              <div>
+                <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
+                  Order Note
+                </p>
+                <textarea
+                  placeholder="Please enter any message you want to leave"
+                  {...register("orderNote")}
+                  className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full mt-5 bg-green-500 text-white font-bold py-4 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer"
+              >
+                Place Order
+              </button>
+
+              {/* Payment Method */}
+              <div className="mt-6">
+                <h2 className="text-[17px] font-bold text-[#1a2e6f] text-center mb-4 tracking-wide">
+                  Payment Method
+                </h2>
+
+                <div className="flex flex-col gap-3">
+                  {/* Cash on Delivery */}
+                  <label className="flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="cod"
+                      className="accent-purple-500"
+                      defaultChecked
+                    />
+                    <img className="h-6" src="/cash.svg" />
+                    <span className="text-sm font-medium text-[#1a1f36]">
+                      Cash on Delivery
+                    </span>
+                  </label>
+
+                  {/* eSewa */}
+                  <label className="flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="esewa"
+                      className="accent-purple-500"
+                    />
+
+                    <img
+                      className="h-7 bg-green-200 rounded-2xl"
+                      src="/esewa.svg"
+                    />
+
+                    <span className="text-sm font-medium text-[#1a1f36]">
+                      eSewa Payment
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
+      <DevTool control={control} />
     </div>
   );
 }

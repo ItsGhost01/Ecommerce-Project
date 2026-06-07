@@ -5,7 +5,7 @@ export default function Footer() {
 
         {/* LEFT */}
         <div>
-          <h2 className="text-2xl font-bold mb-5">Hekto</h2>
+          <h2 className="text-2xl font-bold mb-5">Mstore</h2>
 
           {/* Email */}
           <div className="flex mb-4">

@@ -16,7 +16,7 @@ type FormValues = {
   images: FileList;
 };
 
-export default function Create() {
+export default function Create() { 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 

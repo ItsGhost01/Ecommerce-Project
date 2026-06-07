@@ -125,7 +125,7 @@ export default function Header() {
       <nav className="container">
         <div className="py-3 md:py-5 flex items-center justify-between">
           <Link to="/">
-            <span className="font-josefin font-bold text-3xl">Hekto</span>
+            <span className="font-josefin font-bold text-3xl">Mstore</span>
           </Link>
 
           <div
