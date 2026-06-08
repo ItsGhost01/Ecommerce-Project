@@ -3,6 +3,7 @@ import Cart from "../models/Cart";
 import Product from "../models/Product";
 import ProductImage from "../models/ProductImage";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "../models/User";
 
 Cart;
 
@@ -30,6 +31,12 @@ export const getCart = async (req: Request, res: Response) => {
             as: "images",
             required: false,
             attributes: ["id", "path"],
+          },
+          {
+            model: User,
+            as: "user",
+            required: true,
+            attributes: ["id", "firstName", "lastName"],
           },
         ],
       },

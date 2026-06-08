@@ -53,7 +53,8 @@ import { Link } from "react-router";
 // React Hook Form Implmentation
 import type { SubmitHandler } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
+import { Package } from "lucide-react";
 
 type FormValues = {
   fullName: string;
@@ -75,6 +76,10 @@ interface Product {
   description: string;
   stock: number;
   images: ProductImage[];
+  user: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface CartItem {
@@ -203,16 +208,32 @@ function Cart() {
     );
   };
 
-  const subtotal = carts.reduce((sum, item) => {
-    const price = parseFloat(item.products?.price || "0");
-    return sum + price * item.quantity;
-  }, 0);
+  const subtotal = carts.reduce((sum, { products, quantity }) => {
+  const price = Number(products?.price) || 0;
+  return sum + price * (quantity || 0);
+}, 0);
 
   const getImageUrl = (item: CartItem) => {
     const img = item.products.images?.[0]?.path;
     if (!img) return "";
     return `http://localhost:5000/${img.replace(/\\/g, "/")}`;
   };
+
+ const getDeliveryCharge = (city?: string) => {
+  const insideValley = ["kathmandu", "lalitpur", "bhaktapur"];
+
+  if (!city) return 0; // 👈 important fix
+
+  return insideValley.includes(city.toLowerCase()) ? 100 : 150;
+};
+
+  const city = useWatch({
+  control: form.control,
+  name: "city",
+});
+
+const deliveryCharge = getDeliveryCharge(city || "");
+const total = subtotal + deliveryCharge;
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] px-6 py-10 text-[#1a1f36]">
@@ -261,7 +282,7 @@ function Cart() {
                 return (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center px-6 py-5 border-b border-[#eceef5] last:border-b-0 hover:bg-[#fafbff] transition-colors"
+                    className=" relative grid grid-cols-[2fr_1fr_1fr_1fr] items-center px-6 py-5 border-b border-[#eceef5] last:border-b-0 hover:bg-[#fafbff] transition-colors"
                   >
                     {/* Product */}
                     <div className="flex items-center gap-4 relative">
@@ -301,12 +322,18 @@ function Cart() {
                         <p className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-[#ff2d6b]  text-white text-xs font-semibold mt-2">
                           {item.products.stock} in stock
                         </p>
+
+                        <p className="absolute right-0 text-sm">
+                          <span className="text-[#ff2d6b] ">Seller:</span>{" "}
+                          {item.products.user.firstName}{" "}
+                          {item.products.user.lastName}
+                        </p>
                       </div>
                     </div>
 
                     {/* Price */}
                     <div className="text-center text-sm font-semibold text-[#1a1f36]">
-                      ${parseFloat(item.products.price).toFixed(2)}
+                      Rs.{parseFloat(item.products.price).toFixed(2)}
                     </div>
 
                     {/* Quantity */}
@@ -346,7 +373,7 @@ function Cart() {
 
                     {/* Total */}
                     <div className="text-center text-sm font-bold text-[#1a1f36]">
-                      ${lineTotal.toFixed(2)}
+                      Rs.{lineTotal.toFixed(2)}
                     </div>
                   </div>
                 );
@@ -373,14 +400,25 @@ function Cart() {
             <div className="flex justify-between items-center py-3 border-b border-[#d8dced] text-sm">
               <span className="text-[#5a6488] font-medium">Subtotal</span>
               <span className="font-bold text-[#1a1f36]">
-                ${subtotal.toFixed(2)}
+                Rs.{subtotal.toFixed(2)}
+              </span>
+            </div>
+
+            {/* Delivery charge*/}
+
+            <div className="flex justify-between items-center py-3 border-b border-[#d8dced] text-sm">
+              <span className="text-[#5a6488] font-medium">
+                Delivery Charge
+              </span>
+              <span className="font-bold text-[#1a1f36]">
+                Rs.{deliveryCharge}
               </span>
             </div>
 
             <div className="flex justify-between items-center py-3 text-sm">
               <span className="text-[#5a6488] font-medium">Total</span>
               <span className="font-bold text-[#1a2e6f] text-base">
-                ${subtotal.toFixed(2)}
+                Rs.{total.toFixed(2)}
               </span>
             </div>
 
@@ -457,13 +495,18 @@ function Cart() {
                 <p className="text-[10px] font-semibold text-[#7b82a8] uppercase mb-1">
                   City/District
                 </p>
-                <input
-                  placeholder="Please enter your City/District"
+                <select
                   {...register("city", {
                     required: "City/District is required",
                   })}
                   className="border border-[#7b82a8] p-2 rounded w-full focus:border-purple-600 focus:outline-none"
-                />
+                >
+                  <option value="">Select your city</option>
+                  <option value="kathmandu">Kathmandu</option>
+                  <option value="lalitpur">Lalitpur</option>
+                  <option value="bhaktapur">Bhaktapur</option>
+                  <option value="other">Other</option>
+                </select>
                 {errors.city && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.city.message}
@@ -489,6 +532,9 @@ function Cart() {
               >
                 Place Order
               </button>
+
+
+              <p className="mt-2 border rounded-2xl px-2 py-2 text-sm"> <span className="text-purple-600">Note: </span> <Package className="h-4 w-4 inline-block" /> Delivery Charge inisde valley is Rs.100 and for outside valley is Rs.150</p>
 
               {/* Payment Method */}
               <div className="mt-6">

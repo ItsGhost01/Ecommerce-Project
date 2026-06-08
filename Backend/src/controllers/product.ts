@@ -133,6 +133,11 @@ export const getProducts = async (req: Request, res: Response) => {
           as: "images",
           attributes: ["id", "path"],
         },
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "firstName", "lastName"],
+        },
       ],
       limit: limit,
       order: [sort] as Order,

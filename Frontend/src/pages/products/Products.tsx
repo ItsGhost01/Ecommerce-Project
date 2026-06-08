@@ -38,6 +38,10 @@ interface Product {
   title: string;
   price: number;
   description?: string;
+   user: {
+    firstName: string;
+    lastName: string;
+  };
   images?: {
     path: string;
   }[];
@@ -59,6 +63,10 @@ interface ProductCardProps {
     oldPrice?: number;
     description?: string;
     rating?: string;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
   };
 }
 
@@ -130,12 +138,12 @@ const addToCart = () => {
         <div className="flex items-center gap-2 mb-3 ">
           {product.oldPrice && (
             <span className="text-xs text-gray-400 line-through">
-              ${product.oldPrice}
+              Rs.{product.oldPrice}
             </span>
           )}
 
           <span className="text-red-600 font-medium text-sm">
-            ${product.price}
+            Rs.{product.price}
           </span>
 
           <span
@@ -154,6 +162,10 @@ const addToCart = () => {
         <p className="text-xs text-gray-400 leading-relaxed max-w-lg">
           {product.description}
         </p>
+
+        <p>
+        Added by: {product.user?.firstName} {product.user?.lastName}
+      </p>
   
       </div>
           
@@ -409,6 +421,7 @@ const changeSort = (e) => {
                     price: product.price,
                     description: product.description,
                     rating: "★★★★★",
+                     user: product.user,
                   }}
                 />
               ))}
