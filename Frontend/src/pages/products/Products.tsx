@@ -71,6 +71,8 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
+
+  
     const reduxUser = useSelector(
     (globalstore: RootState) => globalstore.user.value,
   );
@@ -179,7 +181,6 @@ export default function Products() {
   const [error, setError] = useState("");
 
   const [productLoading, setProductLoading] = useState(false);
-  const [categoryLoading, setCategoryLoading] = useState(false);
    const [searchParams, setSearchParams] = useSearchParams();
 
    console.log("product page", searchParams.get("q"));
@@ -201,7 +202,6 @@ export default function Products() {
     const fetchInitialData = async () => {
       try {
         setProductLoading(true);
-        setCategoryLoading(true);
         setError("");
 
         
@@ -221,7 +221,6 @@ export default function Products() {
         setError("Failed to fetch products and categories");
       } finally {
         setProductLoading(false);
-        setCategoryLoading(false);
       }
     };
 
