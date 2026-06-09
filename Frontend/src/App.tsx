@@ -20,17 +20,16 @@ import Dashboard from "./pages/admin/Dashboard";
 import type { RootState } from "@reduxjs/toolkit/query";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
+import Categories from "./pages/admin/Categories";
+import Product from "./pages/admin/Product";
+import Users from "./pages/admin/Users";
 // import { setCartCount } from "./redux/features/cartSlice";
 
 function App() {
+
   const reduxUser = useSelector(
     (globalstore: RootState) => globalstore.user.value,
   );
-
-
-//   const cartCount = useSelector(
-//   (state: RootState) => state.cart.count
-// );
 
   
   const [isLoading, setIsLoading] = useState(true);
@@ -93,8 +92,11 @@ function App() {
           path: "",
           Component: AdminRootLayout,
           children: [
-            // { path: "categories", Component: Categories },
+            { path: "categories", Component: Categories },
             { path: "dashboard", Component: Dashboard },
+            { path: "products", Component: Product},
+            { path: "users", Component: Users},
+            
           ],
         },
       ],

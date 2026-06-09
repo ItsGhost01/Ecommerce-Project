@@ -26,7 +26,7 @@ export default function Login() {
         // setUser(res.data.user);
         localStorage.setItem("token", res.data.token);
         dispatch(login(res.data.user));
-        navigate("/");
+        navigate(res.data.user.isAdmin ? "/admin/dashboard" : "/");
       })
       .catch((err) => {
         if (err.response?.status === 401) {

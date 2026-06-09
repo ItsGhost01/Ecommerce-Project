@@ -21,7 +21,7 @@ const checkAuthentication = (req: Request, res: Response, next: NextFunction) =>
             res.status(401).send("unauthenticated.")
         }
     } else {
-        return res.status(401).send("unauthenticated.")
+        return res.status(401).send("authenticated.")
     }
 }
 

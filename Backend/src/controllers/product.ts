@@ -4,9 +4,11 @@ import ProductImage from "../models/ProductImage";
 import User from "../models/User";
 import Category from "../models/Category";
 import { Op, Order } from "sequelize";
+import Cart from "../models/Cart";
 
 // CREATE PRODUCT
 export const createProduct = async (req: Request, res: Response) => {
+
   try {
     const { title, categoryId, price, description, stock, image } = req.body;
 
@@ -158,6 +160,37 @@ export const getProducts = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch products",
+    });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const productId = req.params.id;
+
+    // first delete from carts
+    await Cart.destroy({
+      where: { product_id: productId },
+    });
+
+    // then delete product
+    const deleted = await Product.destroy({
+      where: { id: productId },
+    });
+
+    if (!deleted) {
+      return res.status(404).json({
+        message: "Product Id not found",
+      });
+    }
+
+    return res.json({
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error",
     });
   }
 };
