@@ -2,6 +2,7 @@ import express from "express";
 import cartRoute from "./routes/cart.js";
 import authRoute from "./routes/auth";
 import productRoute from "./routes/product.js";
+import userRoute from "./routes/user.js";
 //@ts-ignore
 import categoryRoute from "./routes/category.js";
 import "./models/index.js"
@@ -23,6 +24,8 @@ app.use(
   })
 );
 
+
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -35,12 +38,15 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
 // ROUTES
 app.use("/api", authRoute);
 app.use("/api", productRoute);
 app.use("/api/auth", authRoute);
 app.use("/api", categoryRoute);
 app.use("/api", cartRoute);
+app.use("/api", userRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

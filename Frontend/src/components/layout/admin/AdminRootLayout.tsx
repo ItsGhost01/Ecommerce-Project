@@ -11,7 +11,8 @@ export default function AdminRootLayout() {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen bg-black text-white">
+    <div className="bg-black h-200">
+    <div className="flex h-screen bg-black text-white overflow-hidden">
       {/* SIDEBAR */}
       <div className="w-64 bg-[#111] flex flex-col justify-between">
         {/* Top */}
@@ -99,10 +100,11 @@ export default function AdminRootLayout() {
         </div>
 
         {/* PAGE CONTENT */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-6 h-auto overflow-y-auto">
           <Outlet />
         </div>
       </div>
+    </div>
     </div>
   );
 }
