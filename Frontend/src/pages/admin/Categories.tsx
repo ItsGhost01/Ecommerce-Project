@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Trash } from "lucide-react";
 
 interface SubCategory {
   id: number;
@@ -31,54 +32,51 @@ const Categories = () => {
     formState: { errors, isSubmitting },
   } = useForm<CategoryFormData>();
 
-  
- const fetchCategories = async () => {
-  try {
-    const token = localStorage.getItem("token");
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await axios.get("http://localhost:5000/api/category", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setCategories(res.data.data);
-  } catch (error) {
-    console.log("Fetch Categories Error:", error);
-    toast.error("Failed to load categories");
-  }
-};
-
-useEffect(() => {
-  fetchCategories();
-}, []);
-
-const createCategory = async (data: CategoryFormData) => {
-  try {
-    await axios.post(
-      "http://localhost:5000/api/category/add",
-      {
-        title: data.title,
-        parentId: data.parentId ? Number(data.parentId) : null,
-      },
-      {
+      const res = await axios.get("http://localhost:5000/api/category", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
-      }
-    );
+      });
 
-    toast.success("Category created successfully");
+      setCategories(res.data.data);
+    } catch (error) {
+      console.log("Fetch Categories Error:", error);
+      toast.error("Failed to load categories");
+    }
+  };
 
-    // refresh list
+  useEffect(() => {
     fetchCategories();
+  }, []);
 
-    reset();
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to create category");
-  }
-};
+  const createCategory = async (data: CategoryFormData) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/category/add",
+        {
+          title: data.title,
+          parentId: data.parentId ? Number(data.parentId) : null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      toast.success("Category created successfully");
+      fetchCategories();
+      reset();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create category");
+    }
+  };
+
   return (
     <div className="min-h-screen p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -88,14 +86,13 @@ const createCategory = async (data: CategoryFormData) => {
             <h1 className="text-3xl font-bold text-yellow-500">
               Category Management
             </h1>
-
             <p className="text-white-500 mt-1">
               Create and manage categories and subcategories
             </p>
           </div>
 
           <div className="mt-4 md:mt-0 bg-yellow-500 text-white px-5 py-3 rounded-2xl font-semibold">
-           Total Categories  {categories.length}
+            Total Categories {categories.length}
           </div>
         </div>
 
@@ -119,8 +116,7 @@ const createCategory = async (data: CategoryFormData) => {
 
                   <input
                     {...register("title", {
-                      required:
-                        "Category title is required",
+                      required: "Category title is required",
                     })}
                     placeholder="Enter category name"
                     className="w-full text-black px-4 py-3 rounded-xl border border-gray-200 focus:border-yellow-500 focus:ring-4 focus:ring-yellow-100 outline-none transition"
@@ -142,15 +138,10 @@ const createCategory = async (data: CategoryFormData) => {
                     {...register("parentId")}
                     className="w-full px-4 py-3 rounded-xl text-black border border-gray-200 focus:border-yellow-500 focus:ring-4 focus:ring-yellow-100 outline-none transition"
                   >
-                    <option value="">
-                      Main Category
-                    </option>
+                    <option value="">Main Category</option>
 
                     {categories.map((category) => (
-                      <option
-                        key={category.id}
-                        value={category.id}
-                      >
+                      <option key={category.id} value={category.id}>
                         {category.title}
                       </option>
                     ))}
@@ -162,16 +153,14 @@ const createCategory = async (data: CategoryFormData) => {
                   disabled={isSubmitting}
                   className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
                 >
-                  {isSubmitting
-                    ? "Creating..."
-                    : "Create Category"}
+                  {isSubmitting ? "Creating..." : "Create Category"}
                 </button>
               </form>
             </div>
           </div>
 
           {/* Categories Section */}
-          <div className="h-auto w-200 ">
+          <div className="h-auto w-200">
             <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-800">
@@ -185,17 +174,14 @@ const createCategory = async (data: CategoryFormData) => {
 
               {categories.length === 0 ? (
                 <div className="text-center py-16">
-                  <div className="text-6xl mb-4">
-                    📂
-                  </div>
+                  <div className="text-6xl mb-4">📂</div>
 
                   <h3 className="text-lg font-semibold text-gray-700">
                     No Categories Found
                   </h3>
 
                   <p className="text-gray-500 mt-2">
-                    Create your first category to get
-                    started.
+                    Create your first category to get started.
                   </p>
                 </div>
               ) : (
@@ -205,27 +191,42 @@ const createCategory = async (data: CategoryFormData) => {
                       key={category.id}
                       className="border border-gray-200 rounded-2xl p-5 hover:border-yellow-400 hover:bg-yellow-50 transition-all duration-200"
                     >
+                      {/* CATEGORY HEADER */}
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-lg text-gray-800">
                           {category.title}
                         </h3>
 
-                        <span className="bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">
-                          {category.subCategories?.length || 0} Subcategories
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">
+                            {category.subCategories?.length || 0} Subcategories
+                          </span>
+
+                          {/* CATEGORY DELETE BUTTON */}
+                          <button className="text-red-500 text-sm font-semibold hover:text-red-700 cursor-pointer">
+                           <Trash className="w-4 h-4"/>
+                          </button>
+                        </div>
                       </div>
 
+                      {/* SUBCATEGORIES */}
                       {category.subCategories &&
                         category.subCategories.length > 0 && (
                           <div className="mt-4 ml-2 space-y-2">
                             {category.subCategories.map((sub) => (
                               <div
                                 key={sub.id}
-                                className="flex items-center gap-3 text-gray-600"
+                                className="flex items-center justify-between text-gray-600"
                               >
-                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <div className="flex items-center gap-3">
+                                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                  <span>{sub.title}</span>
+                                </div>
 
-                                <span>{sub.title}</span>
+                                {/* SUBCATEGORY DELETE BUTTON */}
+                                <button className="text-red-400 text-sm hover:text-red-600">
+                                  Delete
+                                </button>
                               </div>
                             ))}
                           </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Trash2 } from "lucide-react";
+import { Trash } from "lucide-react";
 
 interface Product {
   id: number;
@@ -114,7 +114,7 @@ const deleteProduct = async (id: number) => {
                   }}
                   className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:bg-red-50 transition"
                 >
-                  <Trash2 size={18} className="text-red-500" />
+                  <Trash size={18} className="text-red-500" />
                 </button>
               </div>
 
