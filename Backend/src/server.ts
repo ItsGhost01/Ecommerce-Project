@@ -10,8 +10,6 @@ import "./models/index.js"
 
 
 
-
-
 import cors from "cors";
 
 const app = express();
@@ -41,7 +39,7 @@ app.use((req, res, next) => {
 
 
 // ROUTES
-app.use("/api", authRoute);
+
 app.use("/api", productRoute);
 app.use("/api/auth", authRoute);
 app.use("/api", categoryRoute);
