@@ -71,17 +71,6 @@ function App() {
   }, [reduxUser]);
 
 
-// useEffect(() => {
-//   axios
-//     .get("http://localhost:5000/api/cart", {
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem("token")}`,
-//       },
-//     })
-//     .then((res) => {
-//       dispatch(setCartCount(res.data.data.total));
-//     });
-// }, [dispatch]);
 
   const router = createBrowserRouter([
     {

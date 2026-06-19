@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken";
 import { User } from "../types/User.js";
 
 
-
-
 const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
     let token = req.headers.authorization?.split(" ")[1]
 

@@ -5,7 +5,7 @@ import ProductImage from "../models/ProductImage";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/User";
 
-Cart;
+
 
 export const getCart = async (req: Request, res: Response) => {
   let cartData = await Cart.findAndCountAll({

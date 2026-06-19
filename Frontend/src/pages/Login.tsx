@@ -49,7 +49,7 @@ export default function Login() {
           </h1>
 
           <p className="text-sm text-gray-400 mt-2 font-Lato">
-            Please login using account detail bellow.
+            Please login using account detail below.
           </p>
         </div>
 

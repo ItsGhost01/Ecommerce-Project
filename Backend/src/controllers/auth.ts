@@ -12,7 +12,7 @@ export const login = async (req: Request, res: Response) => {
                 email: req.body.email
             }
         })
-        // @ts-ignore
+
 
         let hashedPw = user?.getDataValue("password");
         let userInfo = user?.toJSON();
@@ -22,7 +22,7 @@ export const login = async (req: Request, res: Response) => {
             console.log({ matched });
             // generate jwt token 
             if (matched) {
-                let token = jwt.sign({ userInfo,  }, 'shhhhh');
+                let token = jwt.sign({ userInfo, }, 'shhhhh');
                 return res.send({
                     msg: "login success",
                     user: userInfo,
@@ -44,6 +44,8 @@ export const login = async (req: Request, res: Response) => {
 export const signup = async (req: Request, res: Response) => {
 
   try {
+
+  
     let hashedPw = await bcrypt.hash(req.body.password, 10);
 
     await User.create({
